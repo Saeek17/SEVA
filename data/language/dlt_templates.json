@@ -1,0 +1,53 @@
+{
+  "description": "Pre-registered DLT (Distributed Ledger Technology) compliant SMS & Voice templates for TRAI compliance in India. Fixed boilerplate text with {#var#} replacement slots.",
+  "templates": {
+    "IRRIGATE": {
+      "template_id": "DLT-KS-IRR-01",
+      "hi": "किसान साथी: आपकी {crop} फसल ({stage}) के लिए सलाह। अगले 2 दिनों में बारिश की संभावना कम ({rain_prob}%) है और मिट्टी में नमी {moisture}% है। तुरंत हल्की सिंचाई करें।",
+      "mr": "किसान साथी: आपल्या {crop} पिकासाठी ({stage}) सल्ला. पुढील २ दिवसांत पावसाची शक्यता कमी ({rain_prob}%) असून जमिनीत ओलावा {moisture}% आहे. ताबडतोब हलके पाणी द्यावे.",
+      "en": "KisanSaathi: Advisory for your {crop} ({stage}). Low rain chance ({rain_prob}%) and soil moisture is {moisture}%. Provide light irrigation today."
+    },
+    "SKIP_IRRIGATION": {
+      "template_id": "DLT-KS-SKP-01",
+      "hi": "किसान साथी: आपकी {crop} फसल ({stage}) के लिए सलाह। अगले 48 घंटों में {rain_mm} मिमी बारिश का अनुमान है। सिंचाई टालें ताकि जलजमाव न हो।",
+      "mr": "किसान साथी: आपल्या {crop} पिकासाठी ({stage}) सल्ला. पुढील ४८ तासांत {rain_mm} मिमी पावसाचा अंदाज आहे. शेतात पाणी साचू नये म्हणून सिंचन पुढे ढकला.",
+      "en": "KisanSaathi: Advisory for your {crop} ({stage}). Rain of {rain_mm}mm is forecast in next 48h. Postpone irrigation to prevent waterlogging."
+    },
+    "SAFE_SPRAY": {
+      "template_id": "DLT-KS-SPR-01",
+      "hi": "किसान साथी: आपकी {crop} फसल ({stage}) के लिए सलाह। हवा की गति {wind_kmh} किमी/घंटा और मौसम अनुकूल है। दवा छिड़काव का सुरक्षित समय है।",
+      "mr": "किसान साथी: आपल्या {crop} पिकासाठी ({stage}) सल्ला. वाऱ्याचा वेग {wind_kmh} किमी/तास असून हवामान अनुकूल आहे. औषध फवारणीसाठी योग्य वेळ आहे.",
+      "en": "KisanSaathi: Advisory for your {crop} ({stage}). Wind speed is favorable at {wind_kmh} km/h with dry conditions. Safe window for spraying."
+    },
+    "AVOID_SPRAY": {
+      "template_id": "DLT-KS-SPR-02",
+      "hi": "किसान साथी: आपकी {crop} फसल ({stage}) के लिए चेतावनी। तेज हवा ({wind_kmh} किमी/घंटे) या बारिश की संभावना के कारण आज दवा का छिड़काव न करें।",
+      "mr": "किसान साथी: आपल्या {crop} पिकासाठी ({stage}) इशारा. जोरदार वारे ({wind_kmh} किमी/तास) किंवा पावसाच्या शक्यतेमुळे आज फवारणी करू नका.",
+      "en": "KisanSaathi: Alert for your {crop} ({stage}). Postpone spraying due to unfavorable wind ({wind_kmh} km/h) or impending rain."
+    },
+    "HEAT_ALERT": {
+      "template_id": "DLT-KS-ALT-01",
+      "hi": "किसान साथी: मौसम चेतावनी! अधिकतम तापमान {temp_c}°C पहुंचने का अनुमान है जिससे {crop} फसल को नुकसान हो सकता है। नमी बनाए रखने हेतु शाम को हल्की सिंचाई करें।",
+      "mr": "किसान साथी: हवामान इशारा! कमाल तापमान {temp_c}°C पर्यंत वाढण्याची शक्यता आहे, ज्यामुळे {crop} पिकावर ताण येऊ शकतो. संध्याकाळी हलके पाणी द्यावे.",
+      "en": "KisanSaathi: Weather alert! Temperatures may reach {temp_c}C which may stress your {crop}. Apply evening light irrigation to preserve moisture."
+    },
+    "RAIN_ALERT": {
+      "template_id": "DLT-KS-ALT-02",
+      "hi": "किसान साथी: भारी बारिश चेतावनी! अगले 24 घंटों में {rain_mm} मिमी बारिश का अनुमान है। {crop} के खेतों से जल निकासी की व्यवस्था तुरंत करें।",
+      "mr": "किसान साथी: मुसळधार पाऊस इशारा! पुढील २४ तासांत {rain_mm} मिमी पावसाचा अंदाज आहे. {crop} शेतातून पाण्याचा निचरा त्वरित करा.",
+      "en": "KisanSaathi: Heavy rain alert! {rain_mm}mm rainfall expected in 24h. Ensure immediate drainage in your {crop} field."
+    },
+    "DROUGHT_ALERT": {
+      "template_id": "DLT-KS-ALT-03",
+      "hi": "किसान साथी: सूखा चेतावनी! पिछले {dry_days} दिनों से बारिश नहीं हुई है और {crop} पर पानी की कमी का असर हो रहा है। उपलब्ध स्रोत से तुरंत जीवनरक्षक सिंचाई करें।",
+      "mr": "किसान साथी: पावसाचा खंड इशारा! मागील {dry_days} दिवस पाऊस झालेला नाही आणि {crop} पिकावर ताण आला आहे. तातडीने संरक्षित पाणी द्यावे.",
+      "en": "KisanSaathi: Dry spell alert! No rain for {dry_days} days causing stress on {crop}. Provide protective life-saving irrigation immediately."
+    },
+    "HARVEST_READY": {
+      "template_id": "DLT-KS-HRV-01",
+      "hi": "किसान साथी: आपकी {crop} फसल कटाई योग्य हो गई है। आगामी 3 दिनों में मौसम साफ रहने का अनुमान है। कटाई की योजना बनाएं।",
+      "mr": "किसान साथी: आपले {crop} पीक काढणीस तयार झाले आहे. पुढील ३ दिवस हवामान कोरडे राहण्याचा अंदाज असल्याने काढणीचे नियोजन करा.",
+      "en": "KisanSaathi: Your {crop} has reached maturity. Clear dry weather is forecast for the next 3 days. Plan harvest operations."
+    }
+  }
+}

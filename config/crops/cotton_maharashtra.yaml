@@ -1,0 +1,138 @@
+# ==============================================================================
+# Crop Configuration: Cotton (Maharashtra Kharif Season)
+# Target Region: Vidarbha / Marathwada / Khandesh
+# Sources:
+#   - Dr. PDKV Akola Package of Practices for Cotton Cultivation
+#   - ICAR-Central Institute for Cotton Research (CICR) Nagpur
+# ==============================================================================
+
+crop_id: "cotton_maharashtra"
+common_name_en: "Cotton"
+common_name_hi: "कपास"
+common_name_mr: "कापूस"
+scientific_name: "Gossypium hirsutum L."
+typical_duration_days: 165 # NEEDS_EXPERT_REVIEW: PDKV Akola recommends 150-170 days for medium/long staple Bt Cotton
+region: "Maharashtra"
+
+citations:
+  - document: "Dr. PDKV Akola Package of Practices for Cotton (2021-22)"
+    section: "Cotton Agronomy & Pest Management, pp. 15-28"
+  - document: "ICAR-CICR Nagpur Agromet Advisory Bulletins"
+    section: "Moisture Stress at Flowering & Boll Development"
+
+general_thresholds:
+  heat_stress_warning_c: 41.0 # High tolerance in vegetative, but causes square shedding >40C
+  heat_stress_source: "ICAR-CICR Bulletin No. 18, Sec. 2"
+  frost_stress_warning_c: 8.0 # Sensitive to cold during emergence
+  frost_stress_source: "Dr. PDKV PoP, p. 19"
+  excess_rain_24h_mm: 50.0 # Poor tolerance for root aeration failure in black cotton soils
+  excess_rain_source: "Dr. PDKV PoP, p. 21"
+
+stages:
+  - stage_id: "seedling_vegetative"
+    name_en: "Seedling & Vegetative"
+    name_hi: "अंकुरण और वानस्पतिक वृद्धि"
+    name_mr: "उगवण व शाकीय वाढ"
+    das_start: 1
+    das_end: 35
+    critical_for_irrigation: false
+    critical_reason: "Deep taproot development requires moderate moisture"
+    moisture:
+      root_depth_cm: 25
+      depletion_trigger_pct: 35.0
+      waterlogging_threshold_pct: 80.0
+      source: "Dr. PDKV PoP, p. 18"
+    temperature:
+      min_optimal_c: 21.0
+      max_optimal_c: 34.0
+      heat_stress_c: 40.0
+      frost_stress_c: 10.0
+      source: "Dr. PDKV PoP, p. 18"
+    spraying:
+      max_wind_kmh: 12.0
+      min_temp_c: 18.0
+      max_temp_c: 36.0
+      max_rain_probability_pct: 30.0
+      min_relative_humidity_pct: 40.0
+      source: "ICAR-CICR Bulletin, p. 6"
+
+  - stage_id: "square_flower_bud"
+    name_en: "Square & Flower Bud"
+    name_hi: "कलियां और फूल आना"
+    name_mr: "पात्या व फुले येणे"
+    das_start: 36
+    das_end: 70
+    critical_for_irrigation: true
+    critical_reason: "Water stress causes heavy shedding of squares and young buds"
+    moisture:
+      root_depth_cm: 45
+      depletion_trigger_pct: 45.0
+      waterlogging_threshold_pct: 80.0
+      source: "Dr. PDKV PoP, p. 20"
+    temperature:
+      min_optimal_c: 24.0
+      max_optimal_c: 35.0
+      heat_stress_c: 40.0
+      frost_stress_c: 12.0
+      source: "Dr. PDKV PoP, p. 20"
+    spraying:
+      max_wind_kmh: 12.0
+      min_temp_c: 20.0
+      max_temp_c: 35.0
+      max_rain_probability_pct: 25.0
+      min_relative_humidity_pct: 45.0
+      source: "ICAR-CICR Bulletin, p. 8"
+
+  - stage_id: "boll_development"
+    name_en: "Boll Development"
+    name_hi: "टिंडे का विकास"
+    name_mr: "बोंडांचा विकास"
+    das_start: 71
+    das_end: 120
+    critical_for_irrigation: true
+    critical_reason: "Critical moisture deficit leads to small bolls, premature dropping, and fiber deterioration"
+    moisture:
+      root_depth_cm: 60
+      depletion_trigger_pct: 45.0
+      waterlogging_threshold_pct: 80.0
+      source: "Dr. PDKV PoP, p. 22"
+    temperature:
+      min_optimal_c: 24.0
+      max_optimal_c: 34.0
+      heat_stress_c: 38.0
+      frost_stress_c: 12.0
+      source: "Dr. PDKV PoP, p. 22"
+    spraying:
+      max_wind_kmh: 14.0
+      min_temp_c: 18.0
+      max_temp_c: 34.0
+      max_rain_probability_pct: 25.0
+      min_relative_humidity_pct: 40.0
+      source: "ICAR-CICR Bulletin, p. 11"
+
+  - stage_id: "boll_bursting_harvest"
+    name_en: "Boll Bursting & Harvesting"
+    name_hi: "टिंडे फूटना और कपास चुनाई"
+    name_mr: "बोंडे फुटणे व वेचणी"
+    das_start: 121
+    das_end: 165
+    critical_for_irrigation: false
+    critical_reason: "Excess moisture at boll opening causes fiber staining and mold"
+    moisture:
+      root_depth_cm: 60
+      depletion_trigger_pct: 25.0
+      waterlogging_threshold_pct: 75.0
+      source: "Dr. PDKV PoP, p. 25"
+    temperature:
+      min_optimal_c: 20.0
+      max_optimal_c: 32.0
+      heat_stress_c: 38.0
+      frost_stress_c: 10.0
+      source: "Dr. PDKV PoP, p. 25"
+    spraying:
+      max_wind_kmh: 15.0
+      min_temp_c: 16.0
+      max_temp_c: 35.0
+      max_rain_probability_pct: 20.0
+      min_relative_humidity_pct: 35.0
+      source: "ICAR-CICR Bulletin, p. 14"

@@ -1,0 +1,71 @@
+{
+  "source": "AI4Bharat IndicCorp & Digital India Bhashini Agricultural Domain Lexicon",
+  "license": "CC-BY-4.0",
+  "terms": {
+    "irrigation": {
+      "en": "irrigation",
+      "hi": "सिंचाई",
+      "mr": "पाणी देणे / सिंचन"
+    },
+    "spraying": {
+      "en": "spraying",
+      "hi": "छिड़काव",
+      "mr": "फवारणी"
+    },
+    "soil_moisture": {
+      "en": "soil moisture",
+      "hi": "मिट्टी की नमी",
+      "mr": "जमिनीतील ओलावा"
+    },
+    "waterlogging": {
+      "en": "waterlogging",
+      "hi": "जलजमाव",
+      "mr": "पाणी साचणे"
+    },
+    "heat_wave": {
+      "en": "heat wave / high temperature",
+      "hi": "लू / तीव्र गर्मी",
+      "mr": "उष्णतेची लाट / कडक ऊन"
+    },
+    "frost": {
+      "en": "frost",
+      "hi": "पाला / अत्यधिक ठंड",
+      "mr": "धुके / कडाक्याची थंडी"
+    },
+    "dry_spell": {
+      "en": "dry spell",
+      "hi": "बारिश का लंबा अंतराल",
+      "mr": "पावसाचा खंड"
+    },
+    "drainage": {
+      "en": "drainage",
+      "hi": "जल निकासी",
+      "mr": "पाण्याचा निचरा"
+    },
+    "crown_root": {
+      "en": "crown root initiation",
+      "hi": "ताज जड़",
+      "mr": "मुकुट मूळ"
+    },
+    "tillering": {
+      "en": "tillering",
+      "hi": "कल्ले फूटना",
+      "mr": "फुटवे फुटणे"
+    },
+    "flowering": {
+      "en": "flowering",
+      "hi": "फूल आना",
+      "mr": "फुलोरा"
+    },
+    "pod_development": {
+      "en": "pod development",
+      "hi": "फली बनना",
+      "mr": "शेंगा भरणे"
+    },
+    "harvesting": {
+      "en": "harvesting",
+      "hi": "कटाई",
+      "mr": "कापणी"
+    }
+  }
+}

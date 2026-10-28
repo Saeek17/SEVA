@@ -1,0 +1,138 @@
+# ==============================================================================
+# Crop Configuration: Rice (Paddy) (Maharashtra Kharif/Rabi Season)
+# Target Region: Konkan / Vidarbha / Western Ghats
+# Sources:
+#   - Dr. BSKKV Dapoli Package of Practices for Kharif Rice
+#   - ICAR-National Rice Research Institute (NRRI) Agromet Guidelines
+# ==============================================================================
+
+crop_id: "rice_maharashtra"
+common_name_en: "Rice (Paddy)"
+common_name_hi: "चावल (धान)"
+common_name_mr: "भात (धान)"
+scientific_name: "Oryza sativa L."
+typical_duration_days: 130 # NEEDS_EXPERT_REVIEW: Dr. BSKKV recommends 120-135 days for medium varieties (Karjat-3, Ratnagiri-1)
+region: "Maharashtra"
+
+citations:
+  - document: "Dr. BSKKV Dapoli Package of Practices for Kharif Rice"
+    section: "Paddy Cultivation and Water Management, pp. 24-32"
+  - document: "ICAR-NRRI Agromet Advisory Guidelines"
+    section: "Critical Irrigation Stages for Submerged & SRI Paddy"
+
+general_thresholds:
+  heat_stress_warning_c: 38.0 # NEEDS_EXPERT_REVIEW: High temp during flowering causes spikelet sterility; source: ICAR-NRRI
+  heat_stress_source: "ICAR-NRRI Guidelines 2021, Sec. 4"
+  frost_stress_warning_c: 10.0 # NEEDS_EXPERT_REVIEW: Low temp delays panicle emergence
+  frost_stress_source: "Dr. BSKKV PoP, p. 28"
+  excess_rain_24h_mm: 75.0 # NEEDS_EXPERT_REVIEW: High tolerance for submergence, but >75mm threatens nursery/young tillers
+  excess_rain_source: "Dr. BSKKV PoP, p. 30"
+
+stages:
+  - stage_id: "nursery_transplanting"
+    name_en: "Nursery & Transplanting"
+    name_hi: "नर्सरी और रोपाई"
+    name_mr: "रोपवाटिका व पुनर्लागवड"
+    das_start: 1
+    das_end: 25
+    critical_for_irrigation: true
+    critical_reason: "Water layer required for seedling establishment"
+    moisture:
+      root_depth_cm: 15
+      depletion_trigger_pct: 45.0
+      waterlogging_threshold_pct: 95.0
+      source: "Dr. BSKKV PoP, p. 26"
+    temperature:
+      min_optimal_c: 20.0
+      max_optimal_c: 32.0
+      heat_stress_c: 38.0
+      frost_stress_c: 12.0
+      source: "Dr. BSKKV PoP, p. 26"
+    spraying:
+      max_wind_kmh: 12.0
+      min_temp_c: 18.0
+      max_temp_c: 34.0
+      max_rain_probability_pct: 35.0
+      min_relative_humidity_pct: 55.0
+      source: "ICAR-NRRI Guidelines, p. 12"
+
+  - stage_id: "tillering_vegetative"
+    name_en: "Tillering & Vegetative"
+    name_hi: "कल्ले फूटना (टिल्लरिंग)"
+    name_mr: "फुटवे फुटणे (टिल्लरिंग)"
+    das_start: 26
+    das_end: 60
+    critical_for_irrigation: false
+    critical_reason: "Maintain shallow standing water"
+    moisture:
+      root_depth_cm: 25
+      depletion_trigger_pct: 40.0
+      waterlogging_threshold_pct: 95.0
+      source: "Dr. BSKKV PoP, p. 27"
+    temperature:
+      min_optimal_c: 22.0
+      max_optimal_c: 34.0
+      heat_stress_c: 38.0
+      frost_stress_c: 12.0
+      source: "Dr. BSKKV PoP, p. 27"
+    spraying:
+      max_wind_kmh: 14.0
+      min_temp_c: 18.0
+      max_temp_c: 35.0
+      max_rain_probability_pct: 30.0
+      min_relative_humidity_pct: 50.0
+      source: "ICAR-NRRI Guidelines, p. 14"
+
+  - stage_id: "panicle_flowering"
+    name_en: "Panicle Initiation & Flowering"
+    name_hi: "बाली निकलना और फूल आना"
+    name_mr: "लोंबी बाहेर पडणे व फुले येणे"
+    das_start: 61
+    das_end: 95
+    critical_for_irrigation: true
+    critical_reason: "Drought at flowering causes spikelet sterility and chaffy grains"
+    moisture:
+      root_depth_cm: 30
+      depletion_trigger_pct: 50.0
+      waterlogging_threshold_pct: 95.0
+      source: "Dr. BSKKV PoP, p. 29"
+    temperature:
+      min_optimal_c: 24.0
+      max_optimal_c: 33.0
+      heat_stress_c: 37.0
+      frost_stress_c: 14.0
+      source: "Dr. BSKKV PoP, p. 29"
+    spraying:
+      max_wind_kmh: 10.0
+      min_temp_c: 20.0
+      max_temp_c: 33.0
+      max_rain_probability_pct: 25.0
+      min_relative_humidity_pct: 50.0
+      source: "ICAR-NRRI Guidelines, p. 16"
+
+  - stage_id: "grain_filling_ripening"
+    name_en: "Grain Filling & Ripening"
+    name_hi: "दाना भरना और पकना"
+    name_mr: "दाणे भरणे व परिपक्वता"
+    das_start: 96
+    das_end: 130
+    critical_for_irrigation: false
+    critical_reason: "Withhold water 10-14 days prior to harvest"
+    moisture:
+      root_depth_cm: 30
+      depletion_trigger_pct: 30.0
+      waterlogging_threshold_pct: 85.0
+      source: "Dr. BSKKV PoP, p. 31"
+    temperature:
+      min_optimal_c: 20.0
+      max_optimal_c: 32.0
+      heat_stress_c: 36.0
+      frost_stress_c: 12.0
+      source: "Dr. BSKKV PoP, p. 31"
+    spraying:
+      max_wind_kmh: 15.0
+      min_temp_c: 16.0
+      max_temp_c: 34.0
+      max_rain_probability_pct: 25.0
+      min_relative_humidity_pct: 40.0
+      source: "ICAR-NRRI Guidelines, p. 18"

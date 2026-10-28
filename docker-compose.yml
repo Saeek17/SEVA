@@ -1,0 +1,66 @@
+version: "3.8"
+
+services:
+  # Database Service (PostgreSQL 16)
+  postgres:
+    image: postgres:16-alpine
+    container_name: kisansaathi_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kisansaathi_user
+      POSTGRES_PASSWORD: kisansaathi_password
+      POSTGRES_DB: kisansaathi_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kisansaathi_user -d kisansaathi_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Backend Service (FastAPI)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: kisansaathi_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://kisansaathi_user:kisansaathi_password@postgres:5432/kisansaathi_db
+      - DRY_RUN=true
+      - MOCK_DATA=false
+      - ENCRYPTION_KEY=rV2wYpE8Z6tX0cM3vB1nK7jH5fD4sA9qL2wE5rT8yU1=
+      - SECRET_KEY=kisansaathi-super-secret-jwt-key-change-in-production-2026
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID:-}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN:-}
+      - TWILIO_FROM_PHONE=${TWILIO_FROM_PHONE:-+15005550006}
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS:-}
+    volumes:
+      - ./config/crops:/app/../config/crops:ro
+      - ./data:/app/../data:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Frontend Service (Next.js App Router)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: kisansaathi_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+    driver: local

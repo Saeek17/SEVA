@@ -1,0 +1,169 @@
+# ==============================================================================
+# Crop Configuration: Soybean (Maharashtra Kharif Season)
+# Target Region: Marathwada & Vidarbha (Latur, Nanded, Akola, Amravati)
+# Sources:
+#   - VNMKV Parbhani "Krishi Diary & Package of Practices for Kharif Crops", Soybean Section
+#   - ICAR-IISR (Indian Institute of Soybean Research, Indore) Technical Bulletin No. 58
+#   - PDKV Akola Crop Advisory Guidelines for Vidarbha
+#   - FAO EcoCrop Database (Glycine max (L.) Merr., ID 1133)
+# ==============================================================================
+
+crop_id: "soybean_maharashtra"
+common_name_en: "Soybean"
+common_name_hi: "सोयाबीन"
+common_name_mr: "सोयाबीन"
+scientific_name: "Glycine max (L.) Merr."
+typical_duration_days: 100 # NEEDS_EXPERT_REVIEW: VNMKV recommends 95-105 days for JS-335, JS-9305, MAUS-71
+region: "Maharashtra"
+
+citations:
+  - document: "VNMKV Parbhani Package of Practices for Kharif Crops"
+    section: "Soybean Agronomy & Integrated Pest Management"
+  - document: "ICAR-IISR Indore Technical Bulletin No. 58"
+    section: "Water Management and Critical Growth Stages of Soybean"
+  - document: "FAO EcoCrop Database"
+    section: "Glycine max agro-climatic boundaries (ID 1133)"
+
+general_thresholds:
+  heat_stress_warning_c: 38.0 # NEEDS_EXPERT_REVIEW: Flower abortion threshold; source: ICAR-IISR Bull. 58
+  heat_stress_source: "ICAR-IISR Indore Bulletin No. 58"
+  frost_stress_warning_c: 6.0 # NEEDS_EXPERT_REVIEW: Chilling injury limit; source: FAO EcoCrop ID 1133
+  frost_stress_source: "FAO EcoCrop ID 1133"
+  excess_rain_24h_mm: 50.0 # NEEDS_EXPERT_REVIEW: Waterlogging vulnerability threshold; source: VNMKV PoP
+  excess_rain_source: "VNMKV Parbhani PoP Kharif Crops"
+
+stages:
+  - stage_id: "germination_seedling"
+    name_en: "Germination & Seedling"
+    name_hi: "अंकुरण एवं प्रारंभिक अवस्था"
+    name_mr: "उगवण आणि रोप अवस्था"
+    das_start: 1
+    das_end: 20
+    critical_for_irrigation: false # NEEDS_EXPERT_REVIEW: Seedling requires well-drained soil, excessive moisture causes collar rot; source: VNMKV
+    critical_reason: "Excess moisture causes collar rot and damping off; high aeration required"
+    moisture:
+      root_depth_cm: 20 # NEEDS_EXPERT_REVIEW: source: ICAR-IISR
+      depletion_trigger_pct: 35.0 # NEEDS_EXPERT_REVIEW: source: VNMKV PoP
+      waterlogging_threshold_pct: 80.0 # NEEDS_EXPERT_REVIEW: Extreme waterlogging sensitivity; source: ICAR-IISR
+      source: "VNMKV Parbhani & ICAR-IISR"
+    temperature:
+      min_optimal_c: 20.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 1133
+      max_optimal_c: 32.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 1133
+      heat_stress_c: 38.0 # NEEDS_EXPERT_REVIEW: High soil temp damages emerging hypocotyl; source: ICAR-IISR
+      frost_stress_c: 10.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 1133
+      source: "FAO EcoCrop ID 1133"
+    spraying:
+      max_wind_kmh: 12.0 # NEEDS_EXPERT_REVIEW: Early weedicide spray drift limit; source: VNMKV PoP
+      min_temp_c: 18.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      max_temp_c: 35.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      max_rain_probability_pct: 35.0 # NEEDS_EXPERT_REVIEW: source: VNMKV PoP
+      min_relative_humidity_pct: 45.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      source: "VNMKV Parbhani PoP"
+
+  - stage_id: "vegetative_growth"
+    name_en: "Vegetative Branching"
+    name_hi: "वानस्पतिक शाखा विस्तार"
+    name_mr: "शाखीय वाढीची अवस्था"
+    das_start: 21
+    das_end: 40
+    critical_for_irrigation: false # NEEDS_EXPERT_REVIEW: Moderate moisture requirement; source: ICAR-IISR
+    critical_reason: "Root canopy expanding, moderate tolerance to brief dry spell"
+    moisture:
+      root_depth_cm: 35 # NEEDS_EXPERT_REVIEW: source: ICAR-IISR
+      depletion_trigger_pct: 40.0 # NEEDS_EXPERT_REVIEW: source: ICAR-IISR
+      waterlogging_threshold_pct: 85.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      source: "ICAR-IISR Indore Bulletin No. 58"
+    temperature:
+      min_optimal_c: 22.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 1133
+      max_optimal_c: 32.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 1133
+      heat_stress_c: 38.0 # NEEDS_EXPERT_REVIEW: source: ICAR-IISR
+      frost_stress_c: 10.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 1133
+      source: "FAO EcoCrop ID 1133"
+    spraying:
+      max_wind_kmh: 15.0 # NEEDS_EXPERT_REVIEW: Stem fly and girdle beetle spray; source: VNMKV PoP
+      min_temp_c: 18.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      max_temp_c: 34.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      max_rain_probability_pct: 30.0 # NEEDS_EXPERT_REVIEW: Rain wash-off risk; source: VNMKV PoP
+      min_relative_humidity_pct: 40.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      source: "VNMKV Parbhani PoP"
+
+  - stage_id: "flowering"
+    name_en: "Flowering Stage"
+    name_hi: "फूल आने की अवस्था"
+    name_mr: "फुलोरा अवस्था"
+    das_start: 41
+    das_end: 60
+    critical_for_irrigation: true # NEEDS_EXPERT_REVIEW: 1st critical stage for moisture; source: ICAR-IISR & VNMKV
+    critical_reason: "Moisture deficit at flowering causes severe flower drop and yield penalty up to 40%"
+    moisture:
+      root_depth_cm: 50 # NEEDS_EXPERT_REVIEW: source: ICAR-IISR
+      depletion_trigger_pct: 45.0 # NEEDS_EXPERT_REVIEW: source: ICAR-IISR Bull. 58
+      waterlogging_threshold_pct: 85.0 # NEEDS_EXPERT_REVIEW: Aeration needed for nodule nitrogen fixation; source: ICAR-IISR
+      source: "ICAR-IISR Indore Bulletin No. 58 & VNMKV"
+    temperature:
+      min_optimal_c: 22.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 1133
+      max_optimal_c: 30.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 1133
+      heat_stress_c: 36.0 # NEEDS_EXPERT_REVIEW: Above 36C pollen sterility spikes; source: ICAR-IISR
+      frost_stress_c: 12.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 1133
+      source: "ICAR-IISR Bulletin No. 58"
+    spraying:
+      max_wind_kmh: 12.0 # NEEDS_EXPERT_REVIEW: Defoliator / Spodoptera spray window; source: VNMKV PoP
+      min_temp_c: 18.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      max_temp_c: 33.0 # NEEDS_EXPERT_REVIEW: High temp spray harms flower buds; source: SOURCE_TBD
+      max_rain_probability_pct: 25.0 # NEEDS_EXPERT_REVIEW: source: VNMKV PoP
+      min_relative_humidity_pct: 40.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      source: "VNMKV Parbhani PoP"
+
+  - stage_id: "pod_development_seed_fill"
+    name_en: "Pod Development & Seed Fill"
+    name_hi: "फली विकास एवं दाना भराव"
+    name_mr: "शेंगा भरणे आणि दाणे भरणे"
+    das_start: 61
+    das_end: 85
+    critical_for_irrigation: true # NEEDS_EXPERT_REVIEW: 2nd critical stage for moisture; source: ICAR-IISR
+    critical_reason: "Drought stress during seed fill leads to flat pods (pod blight) and aborted seeds"
+    moisture:
+      root_depth_cm: 55 # NEEDS_EXPERT_REVIEW: source: ICAR-IISR
+      depletion_trigger_pct: 45.0 # NEEDS_EXPERT_REVIEW: source: ICAR-IISR Bull. 58
+      waterlogging_threshold_pct: 85.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      source: "ICAR-IISR Indore Bulletin No. 58"
+    temperature:
+      min_optimal_c: 20.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 1133
+      max_optimal_c: 30.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 1133
+      heat_stress_c: 36.0 # NEEDS_EXPERT_REVIEW: Accelerates forced senescence; source: ICAR-IISR
+      frost_stress_c: 10.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 1133
+      source: "ICAR-IISR Bulletin No. 58"
+    spraying:
+      max_wind_kmh: 15.0 # NEEDS_EXPERT_REVIEW: Pod borer / Anthracnose control; source: VNMKV PoP
+      min_temp_c: 18.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      max_temp_c: 33.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      max_rain_probability_pct: 25.0 # NEEDS_EXPERT_REVIEW: source: VNMKV PoP
+      min_relative_humidity_pct: 40.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      source: "VNMKV Parbhani PoP"
+
+  - stage_id: "maturity_harvesting"
+    name_en: "Maturity & Harvesting"
+    name_hi: "परिपक्वता एवं कटाई"
+    name_mr: "पक्वता आणि कापणी अवस्था"
+    das_start: 86
+    das_end: 110
+    critical_for_irrigation: false # NEEDS_EXPERT_REVIEW: Water withholding essential for pod drydown; source: VNMKV
+    critical_reason: "Do NOT irrigate; rain or irrigation at maturity triggers seed germination in pods (vivipary)"
+    moisture:
+      root_depth_cm: 55 # NEEDS_EXPERT_REVIEW: source: ICAR-IISR
+      depletion_trigger_pct: 10.0 # NEEDS_EXPERT_REVIEW: source: VNMKV PoP
+      waterlogging_threshold_pct: 80.0 # NEEDS_EXPERT_REVIEW: High shatter risk if pods rewetted; source: VNMKV
+      source: "VNMKV Parbhani PoP"
+    temperature:
+      min_optimal_c: 20.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 1133
+      max_optimal_c: 34.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 1133
+      heat_stress_c: 38.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      frost_stress_c: 10.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      source: "VNMKV Parbhani"
+    spraying:
+      max_wind_kmh: 20.0 # NEEDS_EXPERT_REVIEW: Pre-harvest interval (PHI) violation risk; spraying prohibited; source: VNMKV PoP
+      min_temp_c: 15.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      max_temp_c: 38.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      max_rain_probability_pct: 20.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      min_relative_humidity_pct: 25.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      source: "VNMKV Parbhani PoP"

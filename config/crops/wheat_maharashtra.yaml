@@ -1,0 +1,170 @@
+# ==============================================================================
+# Crop Configuration: Wheat (Maharashtra Rabi Season)
+# Target Region: Western Maharashtra / Marathwada / Vidarbha
+# Sources: 
+#   - MPKV Rahuri "Package of Practices for Rabi Crops (2020-21)", Wheat Chapter, pp. 38-46
+#   - ICAR-IIWBR (Indian Institute of Wheat and Barley Research) Agromet Advisory Guidelines
+#   - FAO EcoCrop Database (Triticum aestivum L., ID 2102)
+# ==============================================================================
+
+crop_id: "wheat_maharashtra"
+common_name_en: "Wheat"
+common_name_hi: "गेहूं"
+common_name_mr: "गहू"
+scientific_name: "Triticum aestivum L."
+typical_duration_days: 120 # NEEDS_EXPERT_REVIEW: MPKV Rahuri recommends 110-125 days for irrigated varieties (HD-2189, Phule Samadhan)
+region: "Maharashtra"
+
+citations:
+  - document: "MPKV Rahuri Package of Practices for Rabi Crops (2020-21)"
+    section: "Wheat Cultivation & Water Management, pp. 38-46"
+  - document: "ICAR-IIWBR Agromet Advisory Guidelines (Bulletin No. 44)"
+    section: "Critical Irrigation Stages & Heat Stress Management"
+  - document: "FAO EcoCrop Database"
+    section: "Triticum aestivum agro-climatic boundaries (ID 2102)"
+
+# Global crop-level environmental thresholds
+general_thresholds:
+  heat_stress_warning_c: 35.0 # NEEDS_EXPERT_REVIEW: Terminal heat tolerance threshold; source: ICAR-IIWBR Bulletin 44
+  heat_stress_source: "ICAR-IIWBR Bulletin No. 44, Sec. 3.2"
+  frost_stress_warning_c: 4.0 # NEEDS_EXPERT_REVIEW: Frost damage threshold; source: MPKV PoP p. 41
+  frost_stress_source: "MPKV Rahuri PoP 2020-21, p. 41"
+  excess_rain_24h_mm: 35.0 # NEEDS_EXPERT_REVIEW: Waterlogging vulnerability threshold; source: MPKV PoP p. 43
+  excess_rain_source: "MPKV Rahuri PoP 2020-21, p. 43"
+
+# Growth stages by Days After Sowing (DAS)
+stages:
+  - stage_id: "germination_crown_root"
+    name_en: "Crown Root Initiation (CRI)"
+    name_hi: "ताज जड़ दीक्षा (CRI)"
+    name_mr: "मुकुट मूळ अवस्था (CRI)"
+    das_start: 1
+    das_end: 25
+    critical_for_irrigation: true # NEEDS_EXPERT_REVIEW: Most critical stage for wheat; source: MPKV PoP p. 42
+    critical_reason: "Root system establishment failure if moisture stressed"
+    moisture:
+      root_depth_cm: 20 # NEEDS_EXPERT_REVIEW: Active rooting depth; source: ICAR-IIWBR
+      depletion_trigger_pct: 35.0 # NEEDS_EXPERT_REVIEW: Trigger irrigation when available soil moisture < 35%; source: MPKV PoP p. 42
+      waterlogging_threshold_pct: 85.0 # NEEDS_EXPERT_REVIEW: Saturated soil impairs seedling emergence; source: SOURCE_TBD
+      source: "MPKV Rahuri PoP 2020-21, p. 42"
+    temperature:
+      min_optimal_c: 12.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 2102
+      max_optimal_c: 25.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 2102
+      heat_stress_c: 32.0 # NEEDS_EXPERT_REVIEW: source: ICAR-IIWBR Bulletin 44
+      frost_stress_c: 3.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 2102
+      source: "FAO EcoCrop ID 2102 & ICAR-IIWBR"
+    spraying:
+      max_wind_kmh: 12.0 # NEEDS_EXPERT_REVIEW: Weedicide application drift threshold; source: MPKV PoP p. 45
+      min_temp_c: 14.0 # NEEDS_EXPERT_REVIEW: Chemical absorption floor; source: SOURCE_TBD
+      max_temp_c: 32.0 # NEEDS_EXPERT_REVIEW: Evaporation and scorching risk; source: SOURCE_TBD
+      max_rain_probability_pct: 30.0 # NEEDS_EXPERT_REVIEW: Wash-off risk within 24h; source: MPKV PoP p. 45
+      min_relative_humidity_pct: 40.0 # NEEDS_EXPERT_REVIEW: Droplet longevity; source: SOURCE_TBD
+      source: "MPKV Rahuri PoP 2020-21, p. 45"
+
+  - stage_id: "tillering"
+    name_en: "Tillering"
+    name_hi: "कल्ले फूटने की अवस्था"
+    name_mr: "फुटवे फुटण्याची अवस्था"
+    das_start: 26
+    das_end: 45
+    critical_for_irrigation: true # NEEDS_EXPERT_REVIEW: 2nd critical irrigation stage (40-45 DAS); source: MPKV PoP p. 42
+    critical_reason: "Directly determines number of productive tillers per plant"
+    moisture:
+      root_depth_cm: 40 # NEEDS_EXPERT_REVIEW: source: ICAR-IIWBR
+      depletion_trigger_pct: 40.0 # NEEDS_EXPERT_REVIEW: source: MPKV PoP p. 42
+      waterlogging_threshold_pct: 85.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      source: "MPKV Rahuri PoP 2020-21, p. 42"
+    temperature:
+      min_optimal_c: 15.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 2102
+      max_optimal_c: 24.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 2102
+      heat_stress_c: 32.0 # NEEDS_EXPERT_REVIEW: High temp causes premature tiller abortion; source: ICAR-IIWBR
+      frost_stress_c: 4.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 2102
+      source: "MPKV Rahuri PoP 2020-21, p. 42 & FAO EcoCrop"
+    spraying:
+      max_wind_kmh: 15.0 # NEEDS_EXPERT_REVIEW: Post-emergence herbicide window; source: MPKV PoP p. 45
+      min_temp_c: 15.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      max_temp_c: 32.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      max_rain_probability_pct: 30.0 # NEEDS_EXPERT_REVIEW: source: MPKV PoP p. 45
+      min_relative_humidity_pct: 35.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      source: "MPKV Rahuri PoP 2020-21, p. 45"
+
+  - stage_id: "jointing_flowering"
+    name_en: "Late Jointing & Flowering"
+    name_hi: "गांठ बनना एवं फूल आने की अवस्था"
+    name_mr: "कांडी अवस्था आणि फुलोरा"
+    das_start: 46
+    das_end: 75
+    critical_for_irrigation: true # NEEDS_EXPERT_REVIEW: 3rd & 4th critical irrigation stages (60-65 DAS, 70-75 DAS); source: MPKV PoP p. 42
+    critical_reason: "Moisture stress drastically reduces grain count per ear-head"
+    moisture:
+      root_depth_cm: 60 # NEEDS_EXPERT_REVIEW: source: ICAR-IIWBR
+      depletion_trigger_pct: 45.0 # NEEDS_EXPERT_REVIEW: source: MPKV PoP p. 42
+      waterlogging_threshold_pct: 85.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      source: "MPKV Rahuri PoP 2020-21, p. 42"
+    temperature:
+      min_optimal_c: 18.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 2102
+      max_optimal_c: 28.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 2102
+      heat_stress_c: 34.0 # NEEDS_EXPERT_REVIEW: Heat induces pollen sterility; source: ICAR-IIWBR Bulletin 44
+      frost_stress_c: 4.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 2102
+      source: "ICAR-IIWBR Bulletin No. 44"
+    spraying:
+      max_wind_kmh: 12.0 # NEEDS_EXPERT_REVIEW: Fungicide (rust) application limit; source: MPKV PoP p. 46
+      min_temp_c: 15.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      max_temp_c: 32.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      max_rain_probability_pct: 25.0 # NEEDS_EXPERT_REVIEW: source: MPKV PoP p. 46
+      min_relative_humidity_pct: 40.0 # NEEDS_EXPERT_REVIEW: Rust proliferation conditions; source: MPKV PoP p. 46
+      source: "MPKV Rahuri PoP 2020-21, p. 46"
+
+  - stage_id: "milking_dough"
+    name_en: "Milking & Dough Stage"
+    name_hi: "दूधिया एवं दाना भराव अवस्था"
+    name_mr: "दुधाळ आणि दाणे भरण्याची अवस्था"
+    das_start: 76
+    das_end: 100
+    critical_for_irrigation: true # NEEDS_EXPERT_REVIEW: 5th critical irrigation stage (85-90 DAS); source: MPKV PoP p. 42
+    critical_reason: "Moisture stress causes shriveled grains and low test weight"
+    moisture:
+      root_depth_cm: 60 # NEEDS_EXPERT_REVIEW: source: ICAR-IIWBR
+      depletion_trigger_pct: 40.0 # NEEDS_EXPERT_REVIEW: source: MPKV PoP p. 42
+      waterlogging_threshold_pct: 85.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      source: "MPKV Rahuri PoP 2020-21, p. 42"
+    temperature:
+      min_optimal_c: 18.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 2102
+      max_optimal_c: 28.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 2102
+      heat_stress_c: 35.0 # NEEDS_EXPERT_REVIEW: Terminal heat stress causes forced maturity; source: ICAR-IIWBR
+      frost_stress_c: 5.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 2102
+      source: "ICAR-IIWBR Bulletin No. 44"
+    spraying:
+      max_wind_kmh: 15.0 # NEEDS_EXPERT_REVIEW: Aphid spray window; source: MPKV PoP p. 46
+      min_temp_c: 15.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      max_temp_c: 33.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      max_rain_probability_pct: 30.0 # NEEDS_EXPERT_REVIEW: source: MPKV PoP p. 46
+      min_relative_humidity_pct: 35.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      source: "MPKV Rahuri PoP 2020-21, p. 46"
+
+  - stage_id: "maturity_harvesting"
+    name_en: "Maturity & Harvesting"
+    name_hi: "परिपक्वता एवं कटाई"
+    name_mr: "पक्वता आणि कापणी अवस्था"
+    das_start: 101
+    das_end: 130
+    critical_for_irrigation: false # NEEDS_EXPERT_REVIEW: Irrigation must be withheld 15 days before harvest; source: MPKV PoP p. 42
+    critical_reason: "Irrigation at maturity delays ripening and causes lodging"
+    moisture:
+      root_depth_cm: 60 # NEEDS_EXPERT_REVIEW: source: ICAR-IIWBR
+      depletion_trigger_pct: 10.0 # NEEDS_EXPERT_REVIEW: Do not irrigate; source: MPKV PoP p. 42
+      waterlogging_threshold_pct: 80.0 # NEEDS_EXPERT_REVIEW: Grain discoloration and rotting risk; source: MPKV PoP p. 43
+      source: "MPKV Rahuri PoP 2020-21, p. 42"
+    temperature:
+      min_optimal_c: 20.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 2102
+      max_optimal_c: 35.0 # NEEDS_EXPERT_REVIEW: source: FAO EcoCrop ID 2102
+      heat_stress_c: 40.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      frost_stress_c: 5.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      source: "MPKV Rahuri PoP 2020-21"
+    spraying:
+      max_wind_kmh: 20.0 # NEEDS_EXPERT_REVIEW: Spraying generally prohibited before harvest (waiting period); source: MPKV PoP p. 46
+      min_temp_c: 15.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      max_temp_c: 38.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      max_rain_probability_pct: 20.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      min_relative_humidity_pct: 25.0 # NEEDS_EXPERT_REVIEW: source: SOURCE_TBD
+      source: "MPKV Rahuri PoP 2020-21, p. 46"

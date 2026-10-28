@@ -1,0 +1,38 @@
+[
+  {
+    "query_id": "KCC-MH-2023-08-11-001",
+    "call_date": "2023-08-11",
+    "state": "Maharashtra",
+    "district": "Latur",
+    "crop": "Soybean",
+    "category": "Weather and Plant Protection",
+    "question_farmer_vernacular": "सोयाबीन फुलोऱ्यात आहे, पण पाऊस नाहीये. स्प्रिंकलरने पाणी देऊ का आणि खोडकिडीसाठी काय फवारू?",
+    "question_en": "Soybean is in flowering, but no rain. Should I give sprinkler irrigation and what should I spray for stem borer?",
+    "kcc_agent_response": "फवारणीसाठी हवा शांत असतानाच औषध वापरावे. फुलोरा अवस्थेत पाण्याचा ताण पडल्यास हलके पाणी स्प्रिंकलरने द्यावे.",
+    "data_quality_notes": "Clear query, high audio/text fidelity. Demonstrates dual intent: irrigation decision during dry spell + spray window."
+  },
+  {
+    "query_id": "KCC-MH-2023-12-04-002",
+    "call_date": "2023-12-04",
+    "state": "Maharashtra",
+    "district": "Pune",
+    "crop": "Wheat",
+    "category": "Water Management",
+    "question_farmer_vernacular": "गहू पेरून २२ दिवस झाले आहेत. पहिले पाणी कधी द्यावे? थंडी कमी आहे काही नुकसान होईल का?",
+    "question_en": "Wheat was sown 22 days ago. When should first irrigation be given? Temperature is not low enough, will it cause damage?",
+    "kcc_agent_response": "गव्हाला मुकुट मुळे फुटण्याच्या वेळी (२१-२५ दिवस) पहिले पाणी देणे अत्यंत आवश्यक आहे.",
+    "data_quality_notes": "Authentic farmer concern regarding Crown Root Initiation (CRI) timing aligned with temperature variability."
+  },
+  {
+    "query_id": "KCC-MH-2023-08-25-003",
+    "call_date": "2023-08-25",
+    "state": "Maharashtra",
+    "district": "Akola",
+    "crop": "Soybean",
+    "category": "Plant Protection",
+    "question_farmer_vernacular": "सोयाबीनवर लष्करी अळीचा प्रादुर्भाव दिसत आहे. आज ढगाळ वातावरण आहे, फवारणी करावी का?",
+    "question_en": "Spodoptera armyworm infestation is visible on soybean. It is cloudy today, should I spray?",
+    "kcc_agent_response": "पावसाची शक्यता असल्यास फवारणी पुढे ढकलावी कारण औषध वाहून जाण्याची शक्यता असते.",
+    "data_quality_notes": "Highlights farmer's direct reliance on 24-hr rain probability before spending on agro-chemicals."
+  }
+]

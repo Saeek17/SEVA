@@ -1,0 +1,138 @@
+# ==============================================================================
+# Crop Configuration: Maize (Corn) (Maharashtra Kharif/Rabi Season)
+# Target Region: Western Maharashtra / Marathwada
+# Sources:
+#   - MPKV Rahuri Package of Practices for Cereal Crops
+#   - ICAR-Indian Institute of Maize Research (IIMR)
+# ==============================================================================
+
+crop_id: "maize_maharashtra"
+common_name_en: "Maize (Corn)"
+common_name_hi: "मक्का"
+common_name_mr: "मका"
+scientific_name: "Zea mays L."
+typical_duration_days: 105 # MPKV Rahuri recommends 95-110 days for Rajarshi, African Tall, and hybrids
+region: "Maharashtra"
+
+citations:
+  - document: "MPKV Rahuri Package of Practices for Cereal Crops"
+    section: "Maize Cultivation and Irrigation Management, pp. 50-58"
+  - document: "ICAR-IIMR Agromet Advisory Guidelines"
+    section: "Tasseling and Silking Critical Moisture Thresholds"
+
+general_thresholds:
+  heat_stress_warning_c: 38.0 # Extreme heat during pollination desiccates silks
+  heat_stress_source: "ICAR-IIMR Bulletin No. 12"
+  frost_stress_warning_c: 5.0
+  frost_stress_source: "MPKV PoP, p. 52"
+  excess_rain_24h_mm: 45.0 # Highly sensitive to waterlogging at knee-high stage
+  excess_rain_source: "MPKV PoP, p. 54"
+
+stages:
+  - stage_id: "seedling_knee_high"
+    name_en: "Seedling & Knee-High"
+    name_hi: "अंकुरण और घुटने तक वृद्धि"
+    name_mr: "उगवण व गुडघाभर वाढ"
+    das_start: 1
+    das_end: 30
+    critical_for_irrigation: false
+    critical_reason: "Avoid standing water; encourage deep root extension"
+    moisture:
+      root_depth_cm: 25
+      depletion_trigger_pct: 35.0
+      waterlogging_threshold_pct: 80.0
+      source: "MPKV PoP, p. 53"
+    temperature:
+      min_optimal_c: 18.0
+      max_optimal_c: 32.0
+      heat_stress_c: 38.0
+      frost_stress_c: 8.0
+      source: "MPKV PoP, p. 53"
+    spraying:
+      max_wind_kmh: 12.0
+      min_temp_c: 16.0
+      max_temp_c: 35.0
+      max_rain_probability_pct: 30.0
+      min_relative_humidity_pct: 45.0
+      source: "ICAR-IIMR Bulletin, p. 4"
+
+  - stage_id: "tasseling_silking"
+    name_en: "Tasseling & Silking"
+    name_hi: "नर मंजरी और भुट्टे के बाल (सिल्क)"
+    name_mr: "तुरा व कणसाचे केस बाहेर पडणे"
+    das_start: 31
+    das_end: 60
+    critical_for_irrigation: true
+    critical_reason: "Most critical phase: water stress delays silking and leads to poor seed set"
+    moisture:
+      root_depth_cm: 45
+      depletion_trigger_pct: 45.0
+      waterlogging_threshold_pct: 80.0
+      source: "MPKV PoP, p. 55"
+    temperature:
+      min_optimal_c: 20.0
+      max_optimal_c: 32.0
+      heat_stress_c: 37.0
+      frost_stress_c: 10.0
+      source: "MPKV PoP, p. 55"
+    spraying:
+      max_wind_kmh: 10.0
+      min_temp_c: 18.0
+      max_temp_c: 33.0
+      max_rain_probability_pct: 25.0
+      min_relative_humidity_pct: 50.0
+      source: "ICAR-IIMR Bulletin, p. 7"
+
+  - stage_id: "grain_filling_milking"
+    name_en: "Grain Filling & Milking"
+    name_hi: "दाना भरना और दुग्ध अवस्था"
+    name_mr: "दाणे भरणे व दुधाळ अवस्था"
+    das_start: 61
+    das_end: 85
+    critical_for_irrigation: true
+    critical_reason: "Drought causes shriveled grains and reduced cob weight"
+    moisture:
+      root_depth_cm: 50
+      depletion_trigger_pct: 40.0
+      waterlogging_threshold_pct: 80.0
+      source: "MPKV PoP, p. 56"
+    temperature:
+      min_optimal_c: 20.0
+      max_optimal_c: 32.0
+      heat_stress_c: 36.0
+      frost_stress_c: 10.0
+      source: "MPKV PoP, p. 56"
+    spraying:
+      max_wind_kmh: 14.0
+      min_temp_c: 16.0
+      max_temp_c: 34.0
+      max_rain_probability_pct: 25.0
+      min_relative_humidity_pct: 40.0
+      source: "ICAR-IIMR Bulletin, p. 9"
+
+  - stage_id: "maturity_drying"
+    name_en: "Maturity & Drying"
+    name_hi: "परिपक्वता और सुखाई"
+    name_mr: "परिपक्वता व सुकवणे"
+    das_start: 86
+    das_end: 105
+    critical_for_irrigation: false
+    critical_reason: "Cobs dry naturally on plant before harvest"
+    moisture:
+      root_depth_cm: 50
+      depletion_trigger_pct: 25.0
+      waterlogging_threshold_pct: 75.0
+      source: "MPKV PoP, p. 57"
+    temperature:
+      min_optimal_c: 18.0
+      max_optimal_c: 32.0
+      heat_stress_c: 38.0
+      frost_stress_c: 8.0
+      source: "MPKV PoP, p. 57"
+    spraying:
+      max_wind_kmh: 15.0
+      min_temp_c: 15.0
+      max_temp_c: 35.0
+      max_rain_probability_pct: 20.0
+      min_relative_humidity_pct: 35.0
+      source: "ICAR-IIMR Bulletin, p. 11"

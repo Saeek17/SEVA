@@ -1,0 +1,132 @@
+[
+  {
+    "id": "GKMS-MH-PUN-2023-11-24",
+    "district": "Pune",
+    "state": "Maharashtra",
+    "latitude": 18.5204,
+    "longitude": 73.8567,
+    "bulletin_date": "2023-11-24",
+    "crop_id": "wheat_maharashtra",
+    "crop_name": "Wheat",
+    "growth_stage": "Crown Root Initiation (CRI)",
+    "das": 21,
+    "source_bulletin": "IMD Pune GKMS Agromet Advisory Bulletin No. 94/2023",
+    "observed_conditions": {
+      "forecast_rain_48h_mm": 0.0,
+      "max_temp_c": 29.5,
+      "min_temp_c": 14.2,
+      "wind_speed_kmh": 8.0,
+      "soil_moisture_pct": 28.0
+    },
+    "expert_advice": {
+      "irrigation": "IRRIGATE",
+      "spray": "SAFE_SPRAY",
+      "alert": "NONE",
+      "expert_summary_en": "As weather is expected to remain dry, apply first irrigation to wheat at Crown Root Initiation stage (20-22 days after sowing). Weather is favorable for weedicide application."
+    }
+  },
+  {
+    "id": "GKMS-MH-AHM-2023-12-15",
+    "district": "Ahmednagar",
+    "state": "Maharashtra",
+    "latitude": 19.0948,
+    "longitude": 74.7480,
+    "bulletin_date": "2023-12-15",
+    "crop_id": "wheat_maharashtra",
+    "crop_name": "Wheat",
+    "growth_stage": "Tillering",
+    "das": 42,
+    "source_bulletin": "MPKV Rahuri GKMS Agromet Advisory Bulletin No. 100/2023",
+    "observed_conditions": {
+      "forecast_rain_48h_mm": 0.0,
+      "max_temp_c": 28.0,
+      "min_temp_c": 11.5,
+      "wind_speed_kmh": 6.5,
+      "soil_moisture_pct": 32.0
+    },
+    "expert_advice": {
+      "irrigation": "IRRIGATE",
+      "spray": "SAFE_SPRAY",
+      "alert": "NONE",
+      "expert_summary_en": "Provide second irrigation to wheat crop at tillering stage (40 to 45 DAS). Spray against aphids if population exceeds threshold under clear sunny weather."
+    }
+  },
+  {
+    "id": "GKMS-MH-LAT-2023-07-28",
+    "district": "Latur",
+    "state": "Maharashtra",
+    "latitude": 18.4088,
+    "longitude": 76.5604,
+    "bulletin_date": "2023-07-28",
+    "crop_id": "soybean_maharashtra",
+    "crop_name": "Soybean",
+    "growth_stage": "Flowering Stage",
+    "das": 48,
+    "source_bulletin": "VNMKV Parbhani GKMS Advisory Bulletin No. 60/2023",
+    "observed_conditions": {
+      "forecast_rain_48h_mm": 45.0,
+      "max_temp_c": 29.0,
+      "min_temp_c": 22.0,
+      "wind_speed_kmh": 22.0,
+      "soil_moisture_pct": 78.0
+    },
+    "expert_advice": {
+      "irrigation": "SKIP_IRRIGATION",
+      "spray": "AVOID_SPRAY",
+      "alert": "RAIN_ALERT",
+      "expert_summary_en": "Moderate to heavy rainfall and gusty winds predicted. Postpone irrigation and chemical spraying in soybean. Ensure excess rainwater is drained from fields."
+    }
+  },
+  {
+    "id": "GKMS-MH-AKO-2023-08-18",
+    "district": "Akola",
+    "state": "Maharashtra",
+    "latitude": 20.7002,
+    "longitude": 77.0082,
+    "bulletin_date": "2023-08-18",
+    "crop_id": "soybean_maharashtra",
+    "crop_name": "Soybean",
+    "growth_stage": "Pod Development & Seed Fill",
+    "das": 68,
+    "source_bulletin": "PDKV Akola Agromet Advisory Bulletin No. 66/2023",
+    "observed_conditions": {
+      "forecast_rain_48h_mm": 0.0,
+      "max_temp_c": 33.5,
+      "min_temp_c": 24.0,
+      "wind_speed_kmh": 9.0,
+      "soil_moisture_pct": 34.0
+    },
+    "expert_advice": {
+      "irrigation": "IRRIGATE",
+      "spray": "SAFE_SPRAY",
+      "alert": "NONE",
+      "expert_summary_en": "Soybean is in critical pod development stage. Since dry spell continues and soil moisture has depleted, apply protective sprinkler irrigation. Safe window for pod borer management."
+    }
+  },
+  {
+    "id": "GKMS-MH-NAN-2023-09-02",
+    "district": "Nanded",
+    "state": "Maharashtra",
+    "latitude": 19.1383,
+    "longitude": 77.3210,
+    "bulletin_date": "2023-09-02",
+    "crop_id": "soybean_maharashtra",
+    "crop_name": "Soybean",
+    "growth_stage": "Maturity & Harvesting",
+    "das": 95,
+    "source_bulletin": "VNMKV Parbhani GKMS Bulletin No. 70/2023",
+    "observed_conditions": {
+      "forecast_rain_48h_mm": 0.0,
+      "max_temp_c": 31.0,
+      "min_temp_c": 22.0,
+      "wind_speed_kmh": 11.0,
+      "soil_moisture_pct": 25.0
+    },
+    "expert_advice": {
+      "irrigation": "SKIP_IRRIGATION",
+      "spray": "AVOID_SPRAY",
+      "alert": "NONE",
+      "expert_summary_en": "Crop has attained physiological maturity. Strictly withhold irrigation to allow pod drying. Plan harvesting during clear weather."
+    }
+  }
+]

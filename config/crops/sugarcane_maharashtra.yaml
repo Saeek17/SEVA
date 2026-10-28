@@ -1,0 +1,138 @@
+# ==============================================================================
+# Crop Configuration: Sugarcane (Maharashtra Adsali/Pre-Seasonal/Suru)
+# Target Region: Western Maharashtra / Sugar Belt (Kolhapur, Sangli, Pune, Ahmednagar)
+# Sources:
+#   - Vasantdada Sugar Institute (VSI) Pune Cultivation Manual
+#   - MPKV Rahuri Sugarcane Package of Practices
+# ==============================================================================
+
+crop_id: "sugarcane_maharashtra"
+common_name_en: "Sugarcane"
+common_name_hi: "गन्ना"
+common_name_mr: "ऊस"
+scientific_name: "Saccharum officinarum L."
+typical_duration_days: 360 # Suru/Pre-seasonal sugarcane (12-14 months; Adsali can be 16-18 months)
+region: "Maharashtra"
+
+citations:
+  - document: "Vasantdada Sugar Institute (VSI) Pune Sugarcane Manual (2020)"
+    section: "Water Management & Critical Growth Phases, pp. 12-25"
+  - document: "MPKV Rahuri Package of Practices for Cash Crops"
+    section: "Sugarcane Irrigation Schedules & Drought Mitigation"
+
+general_thresholds:
+  heat_stress_warning_c: 42.0 # High solar tolerance, but high transpiration stress
+  heat_stress_source: "VSI Pune Manual, p. 14"
+  frost_stress_warning_c: 6.0 # Winter freeze causes bud kill
+  frost_stress_source: "MPKV PoP, p. 18"
+  excess_rain_24h_mm: 80.0 # High water requirement, but waterlogging causes root rot in black soils
+  excess_rain_source: "VSI Pune Manual, p. 16"
+
+stages:
+  - stage_id: "germination_formative"
+    name_en: "Germination & Formative"
+    name_hi: "अंकुरण और कलिका अवस्था"
+    name_mr: "उगवण व फुटवे फुटणे"
+    das_start: 1
+    das_end: 100
+    critical_for_irrigation: true
+    critical_reason: "Critical for tiller population establishment"
+    moisture:
+      root_depth_cm: 30
+      depletion_trigger_pct: 45.0
+      waterlogging_threshold_pct: 85.0
+      source: "VSI Pune Manual, p. 15"
+    temperature:
+      min_optimal_c: 22.0
+      max_optimal_c: 36.0
+      heat_stress_c: 42.0
+      frost_stress_c: 10.0
+      source: "VSI Pune Manual, p. 15"
+    spraying:
+      max_wind_kmh: 14.0
+      min_temp_c: 18.0
+      max_temp_c: 38.0
+      max_rain_probability_pct: 30.0
+      min_relative_humidity_pct: 45.0
+      source: "MPKV PoP, p. 20"
+
+  - stage_id: "grand_growth"
+    name_en: "Grand Growth Phase"
+    name_hi: "तीव्र वानस्पतिक वृद्धि"
+    name_mr: "मोठी वाढीची अवस्था (कांड्या सुटणे)"
+    das_start: 101
+    das_end: 240
+    critical_for_irrigation: true
+    critical_reason: "Maximum water requirement for internode elongation; stress drastically cuts cane tonnage"
+    moisture:
+      root_depth_cm: 60
+      depletion_trigger_pct: 50.0
+      waterlogging_threshold_pct: 85.0
+      source: "VSI Pune Manual, p. 18"
+    temperature:
+      min_optimal_c: 24.0
+      max_optimal_c: 36.0
+      heat_stress_c: 42.0
+      frost_stress_c: 12.0
+      source: "VSI Pune Manual, p. 18"
+    spraying:
+      max_wind_kmh: 15.0
+      min_temp_c: 18.0
+      max_temp_c: 38.0
+      max_rain_probability_pct: 25.0
+      min_relative_humidity_pct: 40.0
+      source: "MPKV PoP, p. 22"
+
+  - stage_id: "cane_elongation"
+    name_en: "Cane Elongation & Girth"
+    name_hi: "तने की मोटाई और विकास"
+    name_mr: "कांडीची जाडी व लांबी वाढणे"
+    das_start: 241
+    das_end: 300
+    critical_for_irrigation: false
+    critical_reason: "Steady growth, maintain moderate moisture"
+    moisture:
+      root_depth_cm: 75
+      depletion_trigger_pct: 40.0
+      waterlogging_threshold_pct: 85.0
+      source: "VSI Pune Manual, p. 21"
+    temperature:
+      min_optimal_c: 20.0
+      max_optimal_c: 34.0
+      heat_stress_c: 40.0
+      frost_stress_c: 10.0
+      source: "VSI Pune Manual, p. 21"
+    spraying:
+      max_wind_kmh: 15.0
+      min_temp_c: 16.0
+      max_temp_c: 36.0
+      max_rain_probability_pct: 25.0
+      min_relative_humidity_pct: 35.0
+      source: "MPKV PoP, p. 24"
+
+  - stage_id: "maturation_ripening"
+    name_en: "Maturation & Ripening"
+    name_hi: "परिपक्वता और शर्करा संचय"
+    name_mr: "परिपक्वता व साखर भरणे"
+    das_start: 301
+    das_end: 360
+    critical_for_irrigation: false
+    critical_reason: "Gradual water deficit increases sucrose concentration; stop irrigation 15-20 days before harvest"
+    moisture:
+      root_depth_cm: 75
+      depletion_trigger_pct: 25.0
+      waterlogging_threshold_pct: 75.0
+      source: "VSI Pune Manual, p. 24"
+    temperature:
+      min_optimal_c: 16.0
+      max_optimal_c: 30.0
+      heat_stress_c: 38.0
+      frost_stress_c: 8.0
+      source: "VSI Pune Manual, p. 24"
+    spraying:
+      max_wind_kmh: 16.0
+      min_temp_c: 14.0
+      max_temp_c: 35.0
+      max_rain_probability_pct: 20.0
+      min_relative_humidity_pct: 30.0
+      source: "MPKV PoP, p. 26"
