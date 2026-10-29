@@ -110,6 +110,12 @@ class GeminiAdviceClient:
                 return f"किसान साथी: मुसळधार पाऊस इशारा! {crop_name} शेतातून पाण्याचा निचरा त्वरित करा. पुढील 24 तासांत {rain_mm} मिमी पावसाची शक्यता आहे."
             elif action == AdviceAction.HARVEST_READY:
                 return f"किसान साथी: आपले {crop_name} पीक काढणीस तयार आहे. पुढील 7 दिवस हवामान कोरडे असल्याने काढणीचे नियोजन करा."
+            elif action == AdviceAction.DROUGHT_ALERT:
+                dry_days = int(params.get("dry_days", 14))
+                return f"किसान साथी: कोरड्या हवामानाचा इशारा! {dry_days} दिवस पाऊस नाही. {crop_name} पिकासाठी पाण्याची सोय त्वरित करा."
+            elif action == AdviceAction.FROST_ALERT:
+                min_temp = round(params.get("min_temp_c", 5.0), 1)
+                return f"किसान साथी: थंडीचा इशारा! तापमान {min_temp} अंश सेल्सिअसपर्यंत घसरू शकते. {crop_name} पिकाचे संरक्षण करा."
             else:
                 return f"किसान साथी: आपल्या {crop_name} पिकाची पाहणी करा. सद्यस्थितीत हवामान सर्वसाधारण राहील."
 
@@ -132,6 +138,12 @@ class GeminiAdviceClient:
                 return f"KisanSaathi: Heavy rain alert! {rain_mm}mm rain expected in 24 hours. Ensure drainage in your {crop_name} field."
             elif action == AdviceAction.HARVEST_READY:
                 return f"KisanSaathi: Your {crop_name} is ready for harvest. Dry weather expected for the next 7 days. Plan harvesting."
+            elif action == AdviceAction.DROUGHT_ALERT:
+                dry_days = int(params.get("dry_days", 14))
+                return f"KisanSaathi: Dry spell warning! No rain for {dry_days} days. Arrange water for your {crop_name} urgently."
+            elif action == AdviceAction.FROST_ALERT:
+                min_temp = round(params.get("min_temp_c", 5.0), 1)
+                return f"KisanSaathi: Frost warning! Temperature may fall to {min_temp}C. Protect your {crop_name} crop."
             else:
                 return f"KisanSaathi: Monitor your {crop_name} field. Current weather is stable."
 
@@ -154,5 +166,11 @@ class GeminiAdviceClient:
                 return f"किसान साथी: भारी बारिश की चेतावनी! अगले 24 घंटों में {rain_mm} मिमी बारिश का अनुमान है। {crop_name} के खेतों से पानी निकासी सुनिश्चित करें।"
             elif action == AdviceAction.HARVEST_READY:
                 return f"किसान साथी: आपकी {crop_name} फसल कटाई के लिए तैयार है। अगले 7 दिनों तक मौसम साफ रहने का अनुमान है। कटाई शुरू करें।"
+            elif action == AdviceAction.DROUGHT_ALERT:
+                dry_days = int(params.get("dry_days", 14))
+                return f"किसान साथी: सूखे की चेतावनी! {dry_days} दिनों से बारिश नहीं हुई है। {crop_name} फसल के लिए पानी का इंतज़ाम तुरंत करें।"
+            elif action == AdviceAction.FROST_ALERT:
+                min_temp = round(params.get("min_temp_c", 5.0), 1)
+                return f"किसान साथी: पाले की चेतावनी! तापमान {min_temp} डिग्री सेल्सियस तक गिर सकता है। {crop_name} फसल को बचाएं।"
             else:
                 return f"किसान साथी: अपनी {crop_name} फसल की नियमित निगरानी रखें। वर्तमान मौसम अनुकूल है।"

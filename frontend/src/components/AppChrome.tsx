@@ -8,7 +8,7 @@ import { Navbar } from "@/components/Navbar";
 export function AppChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  if (pathname === "/") {
+  if (pathname === "/" || pathname?.startsWith("/kisan")) {
     return <>{children}</>;
   }
 
