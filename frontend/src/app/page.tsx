@@ -421,6 +421,10 @@ export default function MasterDashboardPage() {
         climateSeverity: "warning",
       };
 
+      if (["en", "hi", "mr"].includes(newContext.language)) {
+        setSelectedLanguage(newContext.language);
+      }
+
       setScenarios((prev) => [newScen, ...prev]);
       setSelectedScenarioIndex(0);
       setManualLocationText(newScen.district);
@@ -541,7 +545,7 @@ export default function MasterDashboardPage() {
       {/* ---------------------------------------------------------------------- */}
       {/* 1. LEFT SIDEBAR (GKMS Evaluation removed per user request) */}
       {/* ---------------------------------------------------------------------- */}
-      <aside className="w-72 bg-[#061d15] text-white flex flex-col justify-between shrink-0 border-r border-[#0d3427] select-none">
+      <aside className="w-72 bg-[#061d15] text-white flex flex-col justify-between shrink-0 border-r border-[#0d3427] select-none sticky top-0 h-screen overflow-y-auto">
         <div className="p-5 space-y-6">
           {/* Logo Brand Header */}
           <div className="flex items-center gap-3">
@@ -661,7 +665,7 @@ export default function MasterDashboardPage() {
       {/* ---------------------------------------------------------------------- */}
       {/* 2. MAIN WORKSPACE */}
       {/* ---------------------------------------------------------------------- */}
-      <div className="flex-1 flex flex-col overflow-y-auto">
+      <div className="flex-1 min-w-0 flex flex-col">
         {/* Top Navbar */}
         <header className="h-18 bg-white border-b border-slate-200/80 px-8 flex items-center justify-between sticky top-0 z-30 shadow-xs">
           {/* Breadcrumb */}
