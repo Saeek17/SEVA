@@ -81,6 +81,48 @@ flowchart TD
 
 ---
 
+## Farmer Web App (`/kisan`) — no download needed
+
+The admin dashboard at `/` is built for agriculture officers. Farmers use a separate, phone-first page at **`/kisan`**:
+
+- **Three questions only**: crop (big pictures), district (or "use my location"), and a rough crop age ("1 to 2 months") — farmers rarely know an exact sowing date.
+- **One clear answer**: a large action card ("आज पाणी द्या" / "Do not spray today"), one plain sentence, and a big 🔊 Listen button. Other notes appear as colour-coded icons.
+- **Marathi / Hindi / English** switch at the top; Marathi is the default.
+- **Remembers the farmer** in the browser (no login, no account), so a return visit opens straight to today's advice.
+- **Installable without an app store**: a web app manifest lets the farmer choose *Add to Home screen* in the browser. It then opens full-screen with its own icon.
+
+Ways to reach farmers without any app:
+
+| Channel | Needs smartphone? | Status |
+|---|---|---|
+| `/kisan` web page (share link / QR code) | Yes, any browser | Working |
+| SMS (< 320 characters) | No | Code ready; needs Twilio + TRAI DLT approval |
+| Automated voice call | No | Code ready; needs Twilio + TTS |
+| WhatsApp | Yes | Roadmap |
+
+### Voice
+
+Voice audio is generated on the backend (`backend/app/services/delivery/tts_service.py`), in this order of preference:
+
+1. **Google Cloud TTS** — when `GOOGLE_APPLICATION_CREDENTIALS` is set and `DRY_RUN=false`.
+2. **Neural voices via `edge-tts`** (default, no key needed): `mr-IN-AarohiNeural`, `hi-IN-SwaraNeural`, `en-IN-NeerjaNeural`. Needs internet; the advisory text (crop and weather advice only, no personal data) is sent to Microsoft's speech service. This uses an unofficial endpoint, so treat it as demo-grade and switch to Google Cloud TTS or Azure Speech for production.
+3. **Offline tone** — a placeholder beep if there is no network.
+
+The browser player plays this audio first and only falls back to the browser's built-in voices if it fails (macOS has no Marathi voice, so Marathi falls back to a Hindi voice).
+
+---
+
+## Project Status
+
+KisanSaathi is a **working prototype**, not a production service. See [`docs/AUDIT.md`](docs/AUDIT.md) for the feature-by-feature audit and [`INPUTS_NEEDED.md`](INPUTS_NEEDED.md) for what is required to go live.
+
+- **Working**: rules engine for 7 crops, growth-stage logic, live weather and soil data, guarded message generation with template fallback, farmer registration with encrypted phone numbers, admin dashboard with history and stats, the `/kisan` farmer page, neural voice.
+- **Simulated until configured**: SMS and voice calls (no Twilio credentials), AI wording (no Gemini key — fixed templates are used).
+- **Not built yet**: WhatsApp delivery, WhatsApp → SMS → voice fallback cascade, weekly outlook message, inbound "START" registration, admin login, a public "Data & Methods" page.
+- **Needs expert review**: every crop threshold is marked `# NEEDS_EXPERT_REVIEW`; an agronomist must validate them before real farmers rely on the advice. The GKMS benchmark file currently holds only 6 synthetic cases.
+
+---
+
 ## 3. Environmental Data Sources & Attribution
 
 > [!NOTE]
@@ -102,6 +144,8 @@ flowchart TD
 Every crop configuration is a self-contained YAML document. **No crop names, growth stages, or agro-climatic thresholds may be hardcoded anywhere in application code.**
 
 ### Shipped Crop Configurations
+Seven crops ship in `/config/crops/`: wheat, rice, cotton, soybean, maize, sugarcane and tomato. The two most detailed are described below; the rest follow the same schema (`config/crops/schema.json`) and are all flagged for expert review.
+
 1. **Rabi Wheat (`wheat_maharashtra.yaml`)**:
    - Encodes MPKV Rahuri *Package of Practices for Rabi Crops* (pp. 38–46) and ICAR-IIWBR guidelines.
    - Growth stages: Crown Root Initiation (CRI), Tillering, Late Jointing & Flowering, Milking & Dough, Maturity.
@@ -163,9 +207,10 @@ The system includes an automated evaluation harness located at `backend/app/serv
 ## 7. Quickstart & Local Setup
 
 ### Prerequisites
-- Python 3.11+
+- Python 3.11 – 3.13 (3.14 is very new and some pinned packages may not have builds yet)
 - Node.js 18+ (Node 20 / 22 recommended)
 - Docker & Docker Compose (optional for containerized deployment)
+- Internet access (weather/soil APIs and the neural voice need it; set `MOCK_DATA=true` to run weather offline)
 
 ### Option A: Local Native Setup
 
@@ -173,24 +218,26 @@ The system includes an automated evaluation harness located at `backend/app/serv
 ```bash
 cp .env.example .env
 ```
+The defaults (`DRY_RUN=true`, SQLite database) need no API keys.
 
 #### 2. Backend Setup (FastAPI)
 ```bash
 cd backend
-python -m venv .venv
+python3.13 -m venv venv
 # On Windows:
-.\.venv\Scripts\activate
-# On Linux/macOS:
-# source .venv/bin/activate
+# .\venv\Scripts\activate
+# On Linux/macOS: source venv/bin/activate (or call the venv's python directly, below)
 
-pip install -r requirements.txt
+./venv/bin/python -m pip install -r requirements.txt
 
 # Run full unit test suite (31 tests):
-pytest
+./venv/bin/python -m pytest
 
 # Start FastAPI dev server on port 8000:
-uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+./venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
+Calling `./venv/bin/python -m uvicorn` (rather than a bare `uvicorn`) guarantees the venv's packages are used; a system-wide `uvicorn` on your PATH will fail with `ModuleNotFoundError`. If port 8000 is busy: `lsof -ti :8000 | xargs kill`.
+
 FastAPI documentation will be available at: `http://localhost:8000/docs`
 
 #### 3. Frontend Setup (Next.js)
@@ -199,7 +246,7 @@ cd ../frontend
 npm install
 npm run dev
 ```
-Open `http://localhost:3000` in your browser.
+Open `http://localhost:3000` (admin dashboard) or `http://localhost:3000/kisan` (farmer page). To try the farmer page on your own phone, open `http://<your-computer-ip>:3000/kisan` while both devices are on the same Wi-Fi.
 
 ---
 
@@ -229,13 +276,15 @@ docker-compose up --build
      - Step 2: Growth stage resolution from DAS.
      - Step 3: Deterministic rules engine output with reason codes and university citations.
      - Step 4: Vernacular natural-language SMS with character counter and Anti-Hallucination Guardrail verification verdict.
-     - Step 5: Audio player streaming synthesized Google Cloud TTS audio in Hindi, Marathi, or English.
-
+     - Step 5: Audio player streaming synthesized neural-voice audio (Google Cloud TTS when configured, otherwise `edge-tts`) in Hindi, Marathi, or English.
 3. **Advisory Audit (`/advisories`)**:
    - View the side-by-side audit view comparing rules decisions, generated messages, and delivery logs.
 
 4. **GKMS Evaluation (`/evaluation`)**:
-   - Click **Run Evaluation Suite** to execute the benchmark against authentic IMD agromet bulletins and view the agreement matrix and discrepancy inspector.
+   - Click **Run Evaluation Suite** to execute the benchmark against the bundled GKMS-style advisories and view the agreement matrix and discrepancy inspector. (The shipped benchmark file is a small synthetic set; replace it with real IMD bulletins before drawing conclusions.)
+
+5. **Farmer Page (`/kisan`)**:
+   - Open on a phone-sized screen, pick a crop, a district and a crop age, then tap **Show today's advice**. Switch language at the top and tap **Listen** to hear it.
 
 ---
 
