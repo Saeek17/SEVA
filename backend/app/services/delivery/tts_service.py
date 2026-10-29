@@ -26,6 +26,13 @@ class GoogleTTSService:
         "en": {"language_code": "en-IN", "name": "en-IN-Standard-C"}
     }
 
+    # Female neural voices used when Google Cloud credentials are not configured
+    NEURAL_VOICES = {
+        "hi": "hi-IN-SwaraNeural",
+        "mr": "mr-IN-AarohiNeural",
+        "en": "en-IN-NeerjaNeural",
+    }
+
     @classmethod
     async def synthesize(cls, text: str, language: str = "hi") -> str:
         """
@@ -37,8 +44,10 @@ class GoogleTTSService:
         filename = f"advisory_{lang}_{content_hash[:12]}.wav"
         output_path = AUDIO_DIR / filename
 
-        if output_path.exists():
-            return f"/api/v1/delivery/audio/{filename}"
+        neural_filename = f"advisory_{lang}_{content_hash[:12]}.mp3"
+        neural_path = AUDIO_DIR / neural_filename
+        if neural_path.exists():
+            return f"/api/v1/delivery/audio/{neural_filename}"
 
         # If Google Cloud credentials are set and not in dry-run
         if settings.GOOGLE_APPLICATION_CREDENTIALS and not settings.DRY_RUN:
@@ -63,6 +72,24 @@ class GoogleTTSService:
                 return f"/api/v1/delivery/audio/{filename}"
             except Exception as e:
                 logger.warning(f"Google Cloud TTS failed: {e}. Generating offline synthetic audio.")
+
+        # Keyless neural voices (real Marathi/Hindi/English speech, no credentials)
+        try:
+            import edge_tts
+            communicate = edge_tts.Communicate(
+                text, cls.NEURAL_VOICES.get(lang, cls.NEURAL_VOICES["hi"]), rate="-8%"
+            )
+            await communicate.save(str(neural_path))
+            if neural_path.exists() and neural_path.stat().st_size > 1000:
+                logger.info(f"Synthesized neural TTS audio to {neural_path}")
+                return f"/api/v1/delivery/audio/{neural_filename}"
+            neural_path.unlink(missing_ok=True)
+        except Exception as e:
+            logger.warning(f"Neural TTS failed: {e}. Generating offline synthetic audio.")
+            neural_path.unlink(missing_ok=True)
+
+        if output_path.exists():
+            return f"/api/v1/delivery/audio/{filename}"
 
         # Synthetic Audio Synthesizer (Standard PCM WAV for browser playback)
         cls._create_synthetic_wav(output_path, duration_sec=3.0)

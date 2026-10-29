@@ -21,7 +21,8 @@ async def get_audio_file(filename: str):
     file_path = AUDIO_DIR / filename
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Audio file not found")
-    return FileResponse(file_path, media_type="audio/wav")
+    media_type = "audio/mpeg" if file_path.suffix == ".mp3" else "audio/wav"
+    return FileResponse(file_path, media_type=media_type)
 
 @router.post("/webhooks/sms")
 async def twilio_sms_webhook(request: Request, db: Session = Depends(get_db)):

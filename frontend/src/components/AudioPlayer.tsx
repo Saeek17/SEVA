@@ -10,6 +10,31 @@ interface AudioPlayerProps {
   text?: string;
 }
 
+const FEMALE_HINTS = [
+  "female", "lekha", "tara", "veena", "swara", "aarohi", "kalpana", "heera",
+  "neerja", "samantha", "zira", "google",
+];
+
+// Order of language preferences per UI language. Marathi shares Devanagari
+// with Hindi, so a Hindi voice is the best fallback when no mr-IN voice exists
+// (macOS ships Hindi and Indian English voices but no Marathi).
+const LANG_PREFERENCE: Record<string, string[]> = {
+  mr: ["mr", "hi", "en-in"],
+  hi: ["hi", "en-in"],
+  en: ["en-in", "en"],
+};
+
+function pickVoice(voices: SpeechSynthesisVoice[], language: string): SpeechSynthesisVoice | undefined {
+  for (const prefix of LANG_PREFERENCE[language] || LANG_PREFERENCE.en) {
+    const matches = voices.filter((v) => v.lang.toLowerCase().replace("_", "-").startsWith(prefix));
+    if (matches.length === 0) continue;
+    return (
+      matches.find((v) => FEMALE_HINTS.some((h) => v.name.toLowerCase().includes(h))) || matches[0]
+    );
+  }
+  return undefined;
+}
+
 export function AudioPlayer({
   audioUrl,
   language = "hi",
@@ -25,6 +50,12 @@ export function AudioPlayer({
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<any>(null);
+  const audioFailedRef = useRef(false);
+
+  // A new audio file gets a fresh chance to load
+  useEffect(() => {
+    audioFailedRef.current = false;
+  }, [audioUrl]);
 
   // Initialize Web Speech API voices
   useEffect(() => {
@@ -36,28 +67,7 @@ export function AudioPlayer({
         if (voices.length > 0) {
           setAvailableVoices(voices);
 
-          // Select best female voice for current language
-          const targetLang = language === "mr" ? "mr" : language === "hi" ? "hi" : "en";
-          const langMatch = voices.filter(
-            (v) =>
-              v.lang.toLowerCase().startsWith(targetLang) ||
-              v.lang.toLowerCase().includes(targetLang)
-          );
-
-          // Prefer female sounding voice
-          const femaleMatch = langMatch.find(
-            (v) =>
-              v.name.toLowerCase().includes("female") ||
-              v.name.toLowerCase().includes("swara") ||
-              v.name.toLowerCase().includes("aarohi") ||
-              v.name.toLowerCase().includes("kalpana") ||
-              v.name.toLowerCase().includes("heera") ||
-              v.name.toLowerCase().includes("samantha") ||
-              v.name.toLowerCase().includes("zira") ||
-              v.name.toLowerCase().includes("google")
-          );
-
-          const chosen = femaleMatch || langMatch[0] || voices[0];
+          const chosen = pickVoice(voices, language);
           if (chosen) setSelectedVoiceName(chosen.name);
         }
       };
@@ -113,21 +123,21 @@ export function AudioPlayer({
     const spokenText = cleanTextForSpeech(text);
     const utterance = new SpeechSynthesisUtterance(spokenText);
 
-    // Set language code
-    const langCode = language === "mr" ? "mr-IN" : language === "hi" ? "hi-IN" : "en-IN";
-    utterance.lang = langCode;
-
     // Female voice attributes
     utterance.pitch = 1.05; // Slightly elevated warm pitch for pleasant female tone
     utterance.rate = 0.92; // Deliberate, clear pacing for agricultural comprehension
 
-    // Pick female voice if available
-    const chosenVoice = availableVoices.find((v) => v.name === selectedVoiceName) ||
-      availableVoices.find((v) => v.lang.toLowerCase().includes(language === "mr" ? "mr" : "hi")) ||
-      availableVoices.find((v) => v.name.toLowerCase().includes("female"));
+    // Resolve the voice at speak time: the voice list can still be empty when
+    // the component mounts, so state may be stale.
+    const liveVoices = window.speechSynthesis.getVoices();
+    const chosenVoice =
+      liveVoices.find((v) => v.name === selectedVoiceName) || pickVoice(liveVoices, language);
 
     if (chosenVoice) {
       utterance.voice = chosenVoice;
+      utterance.lang = chosenVoice.lang; // must match the voice or some engines stay silent
+    } else {
+      utterance.lang = language === "mr" ? "mr-IN" : language === "hi" ? "hi-IN" : "en-IN";
     }
 
     // Estimate duration based on word count (~130 words per minute)
@@ -153,23 +163,44 @@ export function AudioPlayer({
     };
 
     utterance.onerror = (e) => {
-      console.warn("SpeechSynthesis error:", e);
       setIsPlaying(false);
       if (timerRef.current) clearInterval(timerRef.current);
+      // "canceled"/"interrupted" come from our own cancel() calls (restart, pause)
+      if (e.error === "canceled" || e.error === "interrupted") return;
+      console.warn("SpeechSynthesis error:", e.error);
       // Fallback to audio element
       if (audioRef.current && resolvedUrl) {
         audioRef.current.play().catch(() => {});
       }
     };
 
-    window.speechSynthesis.speak(utterance);
+    // Chrome drops a speak() issued in the same tick as cancel(), so defer it.
+    setTimeout(() => {
+      window.speechSynthesis.resume();
+      window.speechSynthesis.speak(utterance);
+    }, 60);
+  };
+
+  // Prefer the server-synthesized neural voice (proper Marathi/Hindi/English);
+  // fall back to the browser's built-in voices if the file is missing or blocked.
+  const startPlayback = () => {
+    const audio = audioRef.current;
+    if (audio && resolvedUrl && !audioFailedRef.current) {
+      audio.currentTime = 0;
+      audio.play().catch(() => {
+        audioFailedRef.current = true;
+        startSpeech();
+      });
+      return;
+    }
+    startSpeech();
   };
 
   const togglePlay = () => {
     if (isPlaying) {
       stopPlayback();
     } else {
-      startSpeech();
+      startPlayback();
     }
   };
 
@@ -177,7 +208,7 @@ export function AudioPlayer({
     stopPlayback();
     setCurrentTime(0);
     setTimeout(() => {
-      startSpeech();
+      startPlayback();
     }, 150);
   };
 
@@ -199,9 +230,19 @@ export function AudioPlayer({
       {/* Hidden fallback audio tag */}
       <audio
         ref={audioRef}
-        src={resolvedUrl}
+        src={resolvedUrl || undefined}
+        preload="auto"
+        onLoadedMetadata={(e) => {
+          const d = e.currentTarget.duration;
+          if (Number.isFinite(d)) setDuration(d);
+        }}
+        onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
         onEnded={() => setIsPlaying(false)}
-        onError={() => {}}
+        onError={() => {
+          audioFailedRef.current = true;
+        }}
       />
 
       <div className="flex items-center justify-between mb-4">
