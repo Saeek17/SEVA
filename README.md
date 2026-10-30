@@ -288,6 +288,19 @@ docker-compose up --build
 
 ---
 
+## Deploy (free tiers)
+
+| Part | Where | How |
+|---|---|---|
+| API (`backend/`) | [Render](https://render.com) | *New → Blueprint* → pick this repo; `render.yaml` and `Dockerfile.backend` do the rest |
+| Web app (`frontend/`) | [Vercel](https://vercel.com) | *Add New → Project* → pick this repo, set **Root Directory** to `frontend`, add env `NEXT_PUBLIC_API_URL=https://<your-render-url>/api/v1` |
+
+Order: deploy the API first, copy its URL, then deploy the frontend with that URL. Share `https://<your-vercel-url>/kisan`.
+
+Prototype caveats: Render's free instance sleeps after ~15 minutes idle (the first request then takes ~50 s, so open the link once before a demo), and its SQLite database is wiped on every redeploy, so registered farmers do not persist. `DRY_RUN=true` means no real SMS, WhatsApp or calls are sent. Use a hosted Postgres (`DATABASE_URL`) for anything beyond a demo.
+
+---
+
 ## 8. Verification & Demo Walkthrough
 
 1. **Operations Dashboard (`/dashboard`)**:
