@@ -6,7 +6,20 @@
 [![TypeScript](https://img.shields.io/badge/Language-TypeScript-blue.svg)](https://www.typescriptlang.org)
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB.svg)](https://www.python.org)
 [![TailwindCSS](https://img.shields.io/badge/Styling-TailwindCSS-38B2AC.svg)](https://tailwindcss.com)
-[![Tests](https://img.shields.io/badge/Tests-31%20Passed-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-40%20Passed-brightgreen.svg)]()
+
+## 🌐 Live Demo
+
+| | Link |
+|---|---|
+| **Farmer app** (phone-first, Marathi / Hindi / English) | **https://frontend-xi-nine-44.vercel.app/kisan** |
+| Admin dashboard | https://frontend-xi-nine-44.vercel.app |
+| API health check | https://kisansaathi-api-mw3u.onrender.com/api/v1/health |
+| API docs (Swagger) | https://kisansaathi-api-mw3u.onrender.com/docs |
+
+**Try it:** open the farmer app on a phone → pick a crop (e.g. Soybean) → pick a district or tap *Use my location* → pick the crop age → *Show today's advice*, then tap 🔊 *Listen*. The 🎤 button lets you answer by speaking, and *Add to Home screen* installs it like an app.
+
+> **Heads-up for reviewers:** the API runs on a free Render instance that sleeps when idle, so the **first request can take about 50 seconds**. Weather and soil data are live; SMS, WhatsApp and voice-call delivery are **simulated** (`DRY_RUN=true`). The database resets on every redeploy.
 
 ---
 
@@ -256,7 +269,7 @@ python3.13 -m venv venv
 
 ./venv/bin/python -m pip install -r requirements.txt
 
-# Run full unit test suite (31 tests):
+# Run full unit test suite (40 tests):
 ./venv/bin/python -m pytest
 
 # Start FastAPI dev server on port 8000:
@@ -290,12 +303,24 @@ docker-compose up --build
 
 ## Deploy (free tiers)
 
-| Part | Where | How |
-|---|---|---|
-| API (`backend/`) | [Render](https://render.com) | *New → Blueprint* → pick this repo; `render.yaml` and `Dockerfile.backend` do the rest |
-| Web app (`frontend/`) | [Vercel](https://vercel.com) | *Add New → Project* → pick this repo, set **Root Directory** to `frontend`, add env `NEXT_PUBLIC_API_URL=https://<your-render-url>/api/v1` |
+This is how the live demo above is deployed.
 
-Order: deploy the API first, copy its URL, then deploy the frontend with that URL. Share `https://<your-vercel-url>/kisan`.
+| Part | Where | Live URL | How |
+|---|---|---|---|
+| API (`backend/`) | [Render](https://render.com) | https://kisansaathi-api-mw3u.onrender.com | *New → Blueprint* → pick this repo; `render.yaml` and `Dockerfile.backend` do the rest |
+| Web app (`frontend/`) | [Vercel](https://vercel.com) | https://frontend-xi-nine-44.vercel.app | Either import the repo on Vercel with **Root Directory** `frontend`, or upload from your machine (below) |
+
+Order: deploy the API first, copy its URL, then deploy the frontend with that URL.
+
+```bash
+cd frontend
+npx vercel login
+npx vercel --prod --build-env NEXT_PUBLIC_API_URL=https://<your-render-url>/api/v1
+```
+
+`NEXT_PUBLIC_API_URL` is baked in at build time and must end in `/api/v1`. `frontend/vercel.json` pins the framework to Next.js (without it Vercel looked for a `dist` folder). The CLI route also works when the repository is owned by someone else.
+
+Optional Render environment variables: `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` (phone notifications; generate with `python -m scripts.generate_vapid`), `GEMINI_API_KEY` (AI wording), and the Twilio settings with `DRY_RUN=false` for real messages.
 
 Prototype caveats: Render's free instance sleeps after ~15 minutes idle (the first request then takes ~50 s, so open the link once before a demo), and its SQLite database is wiped on every redeploy, so registered farmers do not persist. `DRY_RUN=true` means no real SMS, WhatsApp or calls are sent. Use a hosted Postgres (`DATABASE_URL`) for anything beyond a demo.
 
