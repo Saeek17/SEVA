@@ -30,7 +30,22 @@ class Settings(BaseSettings):
     TWILIO_ACCOUNT_SID: str = ""
     TWILIO_AUTH_TOKEN: str = ""
     TWILIO_FROM_PHONE: str = "+15005550006" # Standard Twilio test number
+    TWILIO_WHATSAPP_FROM: str = "" # e.g. "+14155238886" (Twilio WhatsApp sandbox/sender); blank disables WhatsApp
     GOOGLE_APPLICATION_CREDENTIALS: str = ""
+
+    # Public HTTPS origin of this API (e.g. https://api.example.com). Twilio must fetch audio from it,
+    # so relative /api/v1/... audio paths are made absolute with this value before voice calls.
+    PUBLIC_BASE_URL: str = ""
+
+    # Web Push (VAPID). Generate with: python -m scripts.generate_vapid
+    VAPID_PUBLIC_KEY: str = ""
+    VAPID_PRIVATE_KEY: str = ""
+    VAPID_SUBJECT: str = "mailto:admin@kisansaathi.local"
+
+    # Background scheduler (06:30 IST morning batch + hourly hazard check)
+    SCHEDULER_ENABLED: bool = True
+    MORNING_BATCH_HOUR: int = 6
+    MORNING_BATCH_MINUTE: int = 30
 
     # Dry-Run / Mock Modes (Allows full app to run without paid keys)
     DRY_RUN: bool = True

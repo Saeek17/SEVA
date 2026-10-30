@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "@/lib/api";
 import type { CropMetadata, SimulationResult, AdviceItem } from "@/lib/types";
+import { DailyAlerts } from "@/components/kisan/DailyAlerts";
+import { VoiceInput } from "@/components/kisan/VoiceInput";
+import type { ParsedSpeech } from "@/lib/voiceParse";
 
 type Lang = "mr" | "hi" | "en";
 
@@ -26,6 +29,11 @@ const T = {
   q3: { mr: "३. पीक किती दिवसांचे?", hi: "३. फसल कितने दिन की है?", en: "3. How old is the crop?" },
   gps: { mr: "📍 माझे ठिकाण वापरा", hi: "📍 मेरी लोकेशन इस्तेमाल करें", en: "📍 Use my location" },
   gpsOk: { mr: "✔ तुमचे ठिकाण मिळाले", hi: "✔ आपकी लोकेशन मिल गई", en: "✔ Location found" },
+  gpsFail: {
+    mr: "ठिकाण मिळाले नाही. कृपया यादीतून तुमचा जिल्हा निवडा.",
+    hi: "लोकेशन नहीं मिली। कृपया सूची से अपना जिला चुनें।",
+    en: "Couldn't get your location. Please pick your district from the list.",
+  },
   go: { mr: "आजचा सल्ला पहा", hi: "आज की सलाह देखें", en: "Show today's advice" },
   loading: { mr: "सल्ला तयार होत आहे…", hi: "सलाह तैयार हो रही है…", en: "Preparing advice…" },
   listen: { mr: "🔊 ऐका", hi: "🔊 सुनें", en: "🔊 Listen" },
@@ -52,16 +60,16 @@ const T = {
 
 const PLACES = [
   { id: "nashik", lat: 20.0063, lon: 73.8077, n: { mr: "नाशिक", hi: "नाशिक", en: "Nashik" } },
-  { id: "pune", lat: 18.5204, lon: 73.8567, n: { mr: "पुणे", hi: "पुणे", en: "Pune" } },
+  { id: "pune", alt: ["पुण्य"], lat: 18.5204, lon: 73.8567, n: { mr: "पुणे", hi: "पुणे", en: "Pune" } },
   { id: "nagpur", lat: 21.1458, lon: 79.0882, n: { mr: "नागपूर", hi: "नागपुर", en: "Nagpur" } },
   { id: "latur", lat: 18.4088, lon: 76.5604, n: { mr: "लातूर", hi: "लातूर", en: "Latur" } },
   { id: "ahmednagar", lat: 19.0948, lon: 74.748, n: { mr: "अहमदनगर", hi: "अहमदनगर", en: "Ahmednagar" } },
-  { id: "akola", lat: 20.7002, lon: 77.0082, n: { mr: "अकोला", hi: "अकोला", en: "Akola" } },
+  { id: "akola", alt: ["अकोल"], lat: 20.7002, lon: 77.0082, n: { mr: "अकोला", hi: "अकोला", en: "Akola" } },
   { id: "kolhapur", lat: 16.705, lon: 74.2433, n: { mr: "कोल्हापूर", hi: "कोल्हापुर", en: "Kolhapur" } },
   { id: "sambhajinagar", lat: 19.8762, lon: 75.3433, n: { mr: "छत्रपती संभाजीनगर", hi: "छत्रपति संभाजीनगर", en: "Chh. Sambhajinagar" } },
   { id: "solapur", lat: 17.6599, lon: 75.9064, n: { mr: "सोलापूर", hi: "सोलापुर", en: "Solapur" } },
   { id: "jalgaon", lat: 21.0077, lon: 75.5626, n: { mr: "जळगाव", hi: "जलगांव", en: "Jalgaon" } },
-  { id: "satara", lat: 17.6805, lon: 74.0183, n: { mr: "सातारा", hi: "सतारा", en: "Satara" } },
+  { id: "satara", alt: ["साता"], lat: 17.6805, lon: 74.0183, n: { mr: "सातारा", hi: "सतारा", en: "Satara" } },
   { id: "yavatmal", lat: 20.3899, lon: 78.1307, n: { mr: "यवतमाळ", hi: "यवतमाल", en: "Yavatmal" } },
 ];
 
@@ -209,13 +217,19 @@ export default function KisanPage() {
   };
 
   const useGps = () => {
-    navigator.geolocation?.getCurrentPosition(
+    // Browsers only expose geolocation on HTTPS (or localhost); fail with a clear hint otherwise.
+    if (!navigator.geolocation || !window.isSecureContext) {
+      setError(t("gpsFail"));
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
       (pos) => {
+        setError("");
         setGps({ lat: pos.coords.latitude, lon: pos.coords.longitude });
         setPlaceId("");
       },
-      () => setError(t("needAll")),
-      { timeout: 10000 }
+      () => setError(t("gpsFail")),
+      { timeout: 10000, maximumAge: 300000 }
     );
   };
 
@@ -268,6 +282,26 @@ export default function KisanPage() {
 
   const cropName = (c: CropMetadata) =>
     lang === "mr" ? c.common_name_mr : lang === "hi" ? c.common_name_hi : c.common_name_en;
+
+  const applySpoken = (p: ParsedSpeech) => {
+    if (p.cropId) setCropId(p.cropId);
+    if (p.placeId) {
+      setPlaceId(p.placeId);
+      setGps(undefined);
+    }
+    if (p.ageId) setAgeId(p.ageId);
+    setError("");
+  };
+
+  const voiceCrops = crops.map((c) => ({
+    id: c.crop_id,
+    names: [c.common_name_mr, c.common_name_hi, c.common_name_en, c.crop_id.split("_")[0]],
+  }));
+  const voicePlaces = PLACES.map((p) => ({ id: p.id, names: [p.n.mr, p.n.hi, p.n.en, ...(p.alt || [])] }));
+  const voiceAges = AGES.map((a) => ({ id: a.id, das: a.das }));
+
+  const alertPlace = PLACES.find((x) => x.id === placeId);
+  const alertCoords = gps || (alertPlace && { lat: alertPlace.lat, lon: alertPlace.lon });
 
   const headline: AdviceItem | undefined = result?.advice_items?.[0];
   const hero = headline ? ACTIONS[headline.action] || ACTIONS.MONITOR_CROP : null;
@@ -368,6 +402,19 @@ export default function KisanPage() {
               </button>
             </div>
 
+            {alertCoords && (
+              <DailyAlerts
+                ctx={{
+                  lang,
+                  cropId: result.crop_id,
+                  das: result.das,
+                  latitude: alertCoords.lat,
+                  longitude: alertCoords.lon,
+                  district: alertPlace?.n.en,
+                }}
+              />
+            )}
+
             <p className="text-sm text-slate-500 text-center pt-2">{t("sms")}</p>
           </div>
         )}
@@ -380,6 +427,15 @@ export default function KisanPage() {
                 {error}
               </div>
             )}
+
+            <VoiceInput
+              lang={lang}
+              crops={voiceCrops}
+              places={voicePlaces}
+              ages={voiceAges}
+              current={{ cropId, placeHasValue: !!(placeId || gps), ageId }}
+              onParsed={applySpoken}
+            />
 
             <section>
               <h2 className="text-xl font-extrabold mb-3">{t("q1")}</h2>

@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Lets a phone on the same Wi-Fi (or a tunnel) load the dev server's JS assets.
+  allowedDevOrigins: ["192.168.1.8", "192.168.*.*", "*.trycloudflare.com"],
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {

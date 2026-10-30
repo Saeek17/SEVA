@@ -106,6 +106,38 @@ export const api = {
     return handleResponse<any>(res);
   },
 
+  // Web Push (PWA notifications)
+  async getPushConfig(): Promise<{ enabled: boolean; public_key: string }> {
+    const res = await fetch(`${API_BASE}/push/public-key`, { cache: "no-store" });
+    return handleResponse<{ enabled: boolean; public_key: string }>(res);
+  },
+
+  async pushSubscribe(data: {
+    endpoint: string;
+    keys: { p256dh: string; auth: string };
+    language: string;
+    latitude: number;
+    longitude: number;
+    crop_id: string;
+    das: number;
+  }) {
+    const res = await fetch(`${API_BASE}/push/subscribe`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    return handleResponse<{ status: string }>(res);
+  },
+
+  async pushUnsubscribe(endpoint: string) {
+    const res = await fetch(`${API_BASE}/push/unsubscribe`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ endpoint })
+    });
+    return handleResponse<{ status: string }>(res);
+  },
+
   // Sandbox Simulator
   async simulateFarmer(payload: {
     latitude: number;

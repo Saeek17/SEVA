@@ -7,6 +7,7 @@ from app.config import settings
 from app.database import Base, engine
 from app.services.crop_engine.loader import crop_loader
 from app.api import api_router
+from app.services.scheduler.task_scheduler import scheduler_service
 
 # Configure logging
 logging.basicConfig(
@@ -26,9 +27,13 @@ async def lifespan(app: FastAPI):
     crops = crop_loader.load_all_crops(force_reload=True)
     logger.info(f"Successfully loaded {len(crops)} crops: {list(crops.keys())}")
 
+    if settings.SCHEDULER_ENABLED:
+        scheduler_service.start()
+
     yield
 
     logger.info("Shutting down KisanSaathi API...")
+    scheduler_service.stop()
 
 app = FastAPI(
     title=settings.APP_NAME,
