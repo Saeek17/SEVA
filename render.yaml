@@ -1,0 +1,26 @@
+# Render Blueprint: deploys the FastAPI backend. The frontend goes on Vercel (see README, "Deploy").
+services:
+  - type: web
+    name: kisansaathi-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile.backend
+    dockerContext: .
+    plan: free
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: DRY_RUN            # no SMS/WhatsApp/calls are sent; all channels are simulated
+        value: "true"
+      - key: SCHEDULER_ENABLED  # free instances sleep, so background jobs are not reliable there
+        value: "false"
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PUBLIC_BASE_URL    # set to this service's https URL after the first deploy
+        sync: false
+      - key: VAPID_PUBLIC_KEY   # optional: enables phone notifications
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: GEMINI_API_KEY     # optional: AI wording; fixed templates are used without it
+        sync: false

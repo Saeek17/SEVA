@@ -1,0 +1,12 @@
+.git
+.env
+**/.env
+**/venv
+**/.venv
+**/__pycache__
+**/.pytest_cache
+frontend
+backend/kisansaathi.db
+backend/app/static/audio/*.mp3
+backend/app/static/audio/*.wav
+docs
