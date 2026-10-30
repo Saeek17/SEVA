@@ -96,9 +96,35 @@ Ways to reach farmers without any app:
 | Channel | Needs smartphone? | Status |
 |---|---|---|
 | `/kisan` web page (share link / QR code) | Yes, any browser | Working |
+| Phone notification (installed PWA, 06:30 IST) | Yes | Working once `VAPID_*` keys are set |
+| WhatsApp message (falls back to SMS) | Yes | Code ready; needs Twilio WhatsApp sender + `DRY_RUN=false` |
 | SMS (< 320 characters) | No | Code ready; needs Twilio + TRAI DLT approval |
 | Automated voice call | No | Code ready; needs Twilio + TTS |
-| WhatsApp | Yes | Roadmap |
+| Missed-call → callback with voice advice | No (basic phone) | Code ready; needs a Twilio number + public URL |
+
+On the page itself, farmers can also **speak instead of tapping** ("तूर, लातूर, ४५ दिवस") using the browser's speech recognition. It is a convenience on top of the buttons, not a replacement: support for Marathi varies by phone, and it falls back to Hindi recognition.
+
+### Daily delivery channels
+
+The scheduler (`backend/app/services/scheduler/task_scheduler.py`) starts with the API (set `SCHEDULER_ENABLED=false` to stop it; run a single API worker so jobs don't duplicate). At 06:30 IST it generates advice for every active farmer and delivers it:
+
+1. **WhatsApp** if `TWILIO_WHATSAPP_FROM` is set; on failure it falls back to **SMS**.
+2. **Voice call** playing the neural-voice audio, if the farmer consented.
+3. **Web Push** to every installed-PWA subscriber (`POST /api/v1/push/subscribe`).
+
+An hourly check sends only new high-urgency alerts (24-hour de-duplication).
+
+**Missed-call IVR.** Point your Twilio number's "A call comes in" webhook at `POST {PUBLIC_BASE_URL}/api/v1/delivery/webhooks/ivr`. The call is rejected (free for the farmer), then KisanSaathi calls back the registered number and plays today's advice. Callbacks are limited to one per farmer per 10 minutes and Twilio signatures are verified when real credentials are configured. Set `NEXT_PUBLIC_MISSED_CALL_NUMBER` to show the number on `/kisan`.
+
+**Enable it for real**
+
+```bash
+cd backend && ./venv/bin/python -m scripts.generate_vapid   # copy the two lines into .env
+```
+
+Then set in `.env`: `VAPID_*` for push; `PUBLIC_BASE_URL` (public HTTPS API URL), `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_PHONE`, `TWILIO_WHATSAPP_FROM` and `DRY_RUN=false` for real messages. With `DRY_RUN=true` (default) every channel is logged and simulated, and nothing is sent.
+
+Notes: on iPhone, push works only after *Add to Home Screen* (iOS 16.4+) and over HTTPS. Phone numbers entered on `/kisan` are encrypted at rest and need the farmer's tick-box consent.
 
 ### Voice
 
@@ -117,8 +143,8 @@ The browser player plays this audio first and only falls back to the browser's b
 KisanSaathi is a **working prototype**, not a production service. See [`docs/AUDIT.md`](docs/AUDIT.md) for the feature-by-feature audit and [`INPUTS_NEEDED.md`](INPUTS_NEEDED.md) for what is required to go live.
 
 - **Working**: rules engine for 7 crops, growth-stage logic, live weather and soil data, guarded message generation with template fallback, farmer registration with encrypted phone numbers, admin dashboard with history and stats, the `/kisan` farmer page, neural voice.
-- **Simulated until configured**: SMS and voice calls (no Twilio credentials), AI wording (no Gemini key — fixed templates are used).
-- **Not built yet**: WhatsApp delivery, WhatsApp → SMS → voice fallback cascade, weekly outlook message, inbound "START" registration, admin login, a public "Data & Methods" page.
+- **Simulated until configured**: SMS, WhatsApp and voice calls (no Twilio credentials or `DRY_RUN=true`), AI wording (no Gemini key — fixed templates are used). The new channels (WhatsApp, missed-call callback, web push) are unit-tested but have not been exercised against live Twilio or a real push service yet.
+- **Not built yet**: weekly outlook message, inbound "START" registration, admin login, a public "Data & Methods" page.
 - **Needs expert review**: every crop threshold is marked `# NEEDS_EXPERT_REVIEW`; an agronomist must validate them before real farmers rely on the advice. The GKMS benchmark file currently holds only 6 synthetic cases.
 
 ---
@@ -289,9 +315,9 @@ docker-compose up --build
 ---
 
 ## 9. Phase 2 Roadmap
-- **Inbound IVR System**: Press 1 for today's advice; voice Q&A powered by Speech-to-Text grounded in Kisan Call Centre (KCC) queries.
+- **Interactive IVR**: the missed-call callback exists; next is "press 1 for today's advice" menus and voice Q&A powered by Speech-to-Text grounded in Kisan Call Centre (KCC) queries.
 - **Satellite Clients**: Integration of Sentinel-2 NDVI via Copernicus STAC API, CHIRPS rainfall, and NASA SMAP soil moisture.
-- **WhatsApp Integration**: Meta WhatsApp Business API support for rich advisory cards with voice notes.
+- **WhatsApp rich cards**: plain-text WhatsApp via Twilio exists; next are approved templates, rich advisory cards and voice notes.
 - **Mandi Price Hints**: Integration with Agmarknet (data.gov.in) for harvest marketing timing.
 
 ---

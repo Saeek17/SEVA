@@ -1,10 +1,10 @@
 import logging
 from pathlib import Path
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends, HTTPException, BackgroundTasks
 from fastapi.responses import FileResponse, Response
 from sqlalchemy.orm import Session
 
-from app.database import get_db
+from app.database import get_db, SessionLocal
 from app.models.farmer import Farmer
 from app.models.delivery import DeliveryLog
 from app.security import hash_phone
@@ -13,6 +13,47 @@ from app.config import settings
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/delivery", tags=["Delivery & Webhooks"])
+
+def _valid_twilio_signature(request: Request, form) -> bool:
+    """
+    Reject forged webhook calls (they would trigger paid callbacks). Enforced only when real Twilio
+    credentials are configured and DRY_RUN is off, so local development keeps working.
+    """
+    if settings.DRY_RUN or not settings.TWILIO_AUTH_TOKEN:
+        return True
+    from twilio.request_validator import RequestValidator
+    base = settings.PUBLIC_BASE_URL.rstrip("/")
+    url = f"{base}{request.url.path}" if base else str(request.url)
+    signature = request.headers.get("X-Twilio-Signature", "")
+    return RequestValidator(settings.TWILIO_AUTH_TOKEN).validate(url, dict(form), signature)
+
+async def _callback_task(phone: str):
+    # Own session: the request-scoped one is closed once the TwiML response has been sent.
+    from app.services.scheduler.task_scheduler import scheduler_service
+    db = SessionLocal()
+    try:
+        found = await scheduler_service.call_back_farmer(phone, db)
+        if not found:
+            logger.info("Missed call from an unregistered number; no callback placed.")
+    except Exception as e:
+        logger.error(f"Missed-call callback failed: {e}")
+    finally:
+        db.close()
+
+@router.post("/webhooks/ivr")
+async def missed_call_ivr(request: Request, background: BackgroundTasks):
+    """
+    Missed-call IVR. Point the Twilio number's "A call comes in" webhook here.
+    The call is rejected (free for the farmer, shows as a missed call), then KisanSaathi calls the
+    farmer back and plays today's advice in their language. Works on any basic phone.
+    """
+    form = await request.form()
+    if not _valid_twilio_signature(request, form):
+        raise HTTPException(status_code=403, detail="Invalid Twilio signature")
+    caller = form.get("From")
+    if caller:
+        background.add_task(_callback_task, caller)
+    return Response(content='<Response><Reject reason="rejected"/></Response>', media_type="application/xml")
 AUDIO_DIR = settings.BACKEND_DIR / "app" / "static" / "audio"
 
 @router.get("/audio/{filename}")
@@ -32,6 +73,8 @@ async def twilio_sms_webhook(request: Request, db: Session = Depends(get_db)):
     2. Inbound opt-out keywords ('STOP', 'थांबवा', 'रोकें') setting is_active = False.
     """
     form_data = await request.form()
+    if not _valid_twilio_signature(request, form_data):
+        raise HTTPException(status_code=403, detail="Invalid Twilio signature")
     message_sid = form_data.get("MessageSid") or form_data.get("SmsSid")
     message_status = form_data.get("MessageStatus") or form_data.get("SmsStatus")
     body = (form_data.get("Body") or "").strip().upper()

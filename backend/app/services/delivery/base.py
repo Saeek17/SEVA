@@ -14,3 +14,7 @@ class BaseDeliveryProvider(ABC):
     async def make_voice_call(self, to_phone: str, audio_url: str, advisory_id: str) -> Dict[str, Any]:
         """Trigger automated outbound voice call playing the TTS audio."""
         pass
+
+    async def send_whatsapp(self, to_phone: str, message: str, advisory_id: str) -> Dict[str, Any]:
+        """Send a WhatsApp message. Providers without WhatsApp support report SKIPPED."""
+        return {"provider": "NONE", "status": "SKIPPED", "sid": None, "error": "WhatsApp not supported"}
