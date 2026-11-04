@@ -1,5 +1,6 @@
 import uuid
 import logging
+from pathlib import Path
 from typing import Dict, Any
 from app.config import settings
 from app.services.delivery.base import BaseDeliveryProvider
@@ -90,11 +91,11 @@ class TwilioDeliveryProvider(BaseDeliveryProvider):
     async def make_voice_call(self, to_phone: str, audio_url: str, advisory_id: str) -> Dict[str, Any]:
         if self._client and not settings.DRY_RUN:
             try:
-                twiml = f"<Response><Play>{absolute_url(audio_url)}</Play></Response>"
+                # Trial accounts reject inline TwiML, so Twilio fetches it from a URL on this API instead.
                 call = self._client.calls.create(
                     to=to_phone,
                     from_=self.from_phone,
-                    twiml=twiml
+                    url=absolute_url(f"/api/v1/delivery/voice-twiml/{Path(audio_url).name}"),
                 )
                 logger.info(f"Twilio Voice Call initiated to {to_phone}. SID: {call.sid}")
                 return {

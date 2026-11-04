@@ -106,6 +106,14 @@ async def twilio_sms_webhook(request: Request, db: Session = Depends(get_db)):
 
     return Response(content="<Response></Response>", media_type="application/xml")
 
+@router.api_route("/voice-twiml/{filename}", methods=["GET", "POST"])
+async def voice_twiml(filename: str):
+    """TwiML Twilio fetches when it connects an outbound advice call: just plays the synthesized audio."""
+    if not (AUDIO_DIR / filename).exists():
+        raise HTTPException(status_code=404, detail="Audio file not found")
+    audio = f"{settings.PUBLIC_BASE_URL.rstrip('/')}/api/v1/delivery/audio/{filename}"
+    return Response(content=f"<Response><Play>{audio}</Play></Response>", media_type="application/xml")
+
 @router.post("/webhooks/voice")
 async def twilio_voice_webhook(request: Request, db: Session = Depends(get_db)):
     """
