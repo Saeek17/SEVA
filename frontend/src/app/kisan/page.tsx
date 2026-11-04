@@ -5,6 +5,9 @@ import { api } from "@/lib/api";
 import type { CropMetadata, SimulationResult, AdviceItem } from "@/lib/types";
 import { DailyAlerts } from "@/components/kisan/DailyAlerts";
 import { VoiceInput } from "@/components/kisan/VoiceInput";
+import { Outlook } from "@/components/kisan/Outlook";
+import { Feedback } from "@/components/kisan/Feedback";
+import { whyText } from "@/lib/why";
 import type { ParsedSpeech } from "@/lib/voiceParse";
 
 type Lang = "mr" | "hi" | "en";
@@ -430,6 +433,7 @@ export default function KisanPage() {
   const headline: AdviceItem | undefined = result?.advice_items?.[0];
   const hero = headline ? ACTIONS[headline.action] || ACTIONS.MONITOR_CROP : null;
   const others = (result?.advice_items || []).slice(1);
+  const whyLine = headline ? whyText(headline.reason_code, headline.params, lang) : null;
 
   return (
     <div className="min-h-screen bg-[#f3f8f4] text-slate-900">
@@ -502,6 +506,9 @@ export default function KisanPage() {
               <p className="mt-3 text-xl leading-relaxed">
                 {result.generated_message.replace(/^(किसान साथी|KisanSaathi):\s*/, "")}
               </p>
+              {whyLine && (
+                <p className="mt-3 text-base font-semibold leading-relaxed opacity-80">💡 {whyLine}</p>
+              )}
             </div>
 
             <button
@@ -529,6 +536,21 @@ export default function KisanPage() {
                   })}
                 </ul>
               </section>
+            )}
+
+            <Outlook days={result.environmental_data?.daily_outlook} lang={lang} />
+
+            {!savedFrom && (
+              <Feedback
+                key={`${result.crop_id}-${headline.action}-${result.generated_message.length}`}
+                ctx={{
+                  lang,
+                  cropId: result.crop_id,
+                  action: headline.action,
+                  reasonCode: headline.reason_code,
+                  das: result.das,
+                }}
+              />
             )}
 
             <div className="grid grid-cols-2 gap-3 pt-2">

@@ -20,6 +20,15 @@ export interface GrowthStage {
   critical_reason?: string;
 }
 
+export interface DayOutlook {
+  date: string; // YYYY-MM-DD
+  rain_mm: number;
+  rain_prob_pct: number;
+  max_temp_c: number;
+  min_temp_c: number;
+  wind_kmh: number;
+}
+
 export interface EnvironmentalSnapshot {
   latitude: number;
   longitude: number;
@@ -37,6 +46,7 @@ export interface EnvironmentalSnapshot {
   soil_texture_class: string;
   consecutive_dry_days: number;
   cumulative_rain_30d_mm: number;
+  daily_outlook?: DayOutlook[];
   data_confidence: "HIGH" | "MEDIUM" | "LOW";
   sources_used: string[];
 }

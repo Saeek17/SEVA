@@ -28,6 +28,15 @@ class AdviceItem(BaseModel):
     data_confidence: str = Field(default="HIGH", description="HIGH, MEDIUM, or LOW based on data client availability")
     sources_used: List[str] = Field(default_factory=list)
 
+class DayOutlook(BaseModel):
+    """One day of the forecast, shown to farmers as the "next 5 days" strip."""
+    date: str  # YYYY-MM-DD
+    rain_mm: float
+    rain_prob_pct: float
+    max_temp_c: float
+    min_temp_c: float
+    wind_kmh: float
+
 class EnvironmentalSnapshot(BaseModel):
     latitude: float
     longitude: float
@@ -48,6 +57,8 @@ class EnvironmentalSnapshot(BaseModel):
     # Historical Trends (NASA POWER)
     consecutive_dry_days: int # Days with rain < 2.5mm
     cumulative_rain_30d_mm: float
+    # Day-by-day forecast (empty when the weather source is unavailable)
+    daily_outlook: List[DayOutlook] = Field(default_factory=list)
     # Confidence & metadata
     data_confidence: str = "HIGH"
     sources_used: List[str] = Field(default_factory=lambda: ["Open-Meteo", "NASA POWER", "ISRIC SoilGrids"])
