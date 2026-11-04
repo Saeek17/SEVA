@@ -138,6 +138,23 @@ export const api = {
     return handleResponse<{ status: string }>(res);
   },
 
+  // Anonymous "was this useful?" feedback on an advice card
+  async sendFeedback(data: {
+    helpful: boolean;
+    crop_id: string;
+    action: string;
+    reason_code?: string;
+    das?: number;
+    language: string;
+  }) {
+    const res = await fetch(`${API_BASE}/feedback`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    return handleResponse<{ status: string }>(res);
+  },
+
   // Sandbox Simulator
   async simulateFarmer(payload: {
     latitude: number;

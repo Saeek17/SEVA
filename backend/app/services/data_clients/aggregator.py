@@ -3,7 +3,7 @@ import logging
 from typing import Dict, Any
 
 from app.config import settings
-from app.schemas.rules import EnvironmentalSnapshot
+from app.schemas.rules import EnvironmentalSnapshot, DayOutlook
 from app.services.data_clients.open_meteo import OpenMeteoClient
 from app.services.data_clients.nasa_power import NasaPowerClient
 from app.services.data_clients.isric_soilgrids import ISRICSoilGridsClient
@@ -77,9 +77,30 @@ class EnvironmentalAggregator:
             soil_texture_class=sg_res["soil_texture_class"],
             consecutive_dry_days=np_res["consecutive_dry_days"],
             cumulative_rain_30d_mm=np_res["cumulative_rain_30d_mm"],
+            daily_outlook=self._daily_outlook(om_res.get("raw_daily") or {}),
             data_confidence=data_confidence,
             sources_used=sources_used
         )
+
+    @staticmethod
+    def _daily_outlook(daily: dict, days: int = 5) -> list:
+        """Turn Open-Meteo's parallel daily arrays into per-day records; empty if the data is missing."""
+        dates = daily.get("time") or []
+        def col(name, default):
+            values = daily.get(name) or []
+            return [default if v is None else v for v in values]
+        rain, prob = col("precipitation_sum", 0.0), col("precipitation_probability_max", 0.0)
+        tmax, tmin, wind = col("temperature_2m_max", 0.0), col("temperature_2m_min", 0.0), col("wind_speed_10m_max", 0.0)
+        out = []
+        for i, d in enumerate(dates[:days]):
+            if i >= min(len(rain), len(prob), len(tmax), len(tmin), len(wind)):
+                break
+            out.append(DayOutlook(
+                date=d, rain_mm=round(float(rain[i]), 1), rain_prob_pct=round(float(prob[i]), 0),
+                max_temp_c=round(float(tmax[i]), 1), min_temp_c=round(float(tmin[i]), 1),
+                wind_kmh=round(float(wind[i]), 1),
+            ))
+        return out
 
     def _build_mock_snapshot(self, lat: float, lon: float) -> EnvironmentalSnapshot:
         return EnvironmentalSnapshot(
