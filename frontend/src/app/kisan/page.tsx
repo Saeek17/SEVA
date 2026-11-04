@@ -40,6 +40,21 @@ const T = {
   stop: { mr: "⏹ थांबवा", hi: "⏹ रोकें", en: "⏹ Stop" },
   change: { mr: "✏️ माहिती बदला", hi: "✏️ जानकारी बदलें", en: "✏️ Change details" },
   refresh: { mr: "🔄 पुन्हा तपासा", hi: "🔄 फिर से जांचें", en: "🔄 Check again" },
+  home: { mr: "🏠 पुन्हा सल्ला विचारा", hi: "🏠 फिर से सलाह पूछें", en: "🏠 Ask for advice again" },
+  history: { mr: "📜 जुना सल्ला", hi: "📜 पुरानी सलाह", en: "📜 History" },
+  historyEmpty: {
+    mr: "अजून जतन केलेला सल्ला नाही.",
+    hi: "अभी तक कोई सहेजी हुई सलाह नहीं है।",
+    en: "No saved advice yet.",
+  },
+  savedOn: { mr: "📜 जतन केलेला सल्ला:", hi: "📜 सहेजी गई सलाह:", en: "📜 Saved advice from" },
+  clearHistory: { mr: "🗑 इतिहास पुसा", hi: "🗑 इतिहास मिटाएं", en: "🗑 Clear history" },
+  confirmClear: {
+    mr: "सर्व जतन केलेला सल्ला पुसायचा?",
+    hi: "सारी सहेजी गई सलाह मिटाएं?",
+    en: "Delete all saved advice?",
+  },
+  myLocation: { mr: "माझे ठिकाण", hi: "मेरी लोकेशन", en: "My location" },
   more: { mr: "इतर सूचना", hi: "अन्य सूचनाएं", en: "Other notes" },
   error: {
     mr: "सल्ला मिळवता आला नाही. इंटरनेट तपासा आणि पुन्हा प्रयत्न करा.",
@@ -115,6 +130,45 @@ interface Profile {
 }
 
 const STORE_KEY = "kisan_profile_v1";
+const HISTORY_KEY = "kisan_history_v1";
+const HISTORY_MAX = 30;
+
+// One saved piece of advice, kept only in this phone's browser (nothing is sent to a server).
+interface HistoryEntry {
+  id: string;
+  ts: number;
+  profile: Profile;
+  cropNames: Record<Lang, string>;
+  message: string;
+  actions: string[];
+  das: number;
+  audio?: string;
+}
+
+function placeKey(p: Profile) {
+  return p.gps ? `${p.gps.lat.toFixed(2)},${p.gps.lon.toFixed(2)}` : p.placeId;
+}
+
+// One entry per crop, place and crop age per day, so reopening the page doesn't fill the list with copies.
+function entryKey(e: Pick<HistoryEntry, "profile" | "das" | "ts">) {
+  return `${e.profile.cropId}|${placeKey(e.profile)}|${e.das}|${new Date(e.ts).toDateString()}`;
+}
+
+function readHistory(): HistoryEntry[] {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? (list as HistoryEntry[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeHistory(list: HistoryEntry[]) {
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
+  } catch {}
+}
 
 function cropEmoji(cropId: string) {
   const key = Object.keys(CROP_EMOJI).find((k) => cropId.startsWith(k));
@@ -141,9 +195,29 @@ export default function KisanPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [playing, setPlaying] = useState(false);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [savedFrom, setSavedFrom] = useState<HistoryEntry | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const t = (k: keyof typeof T) => T[k][lang];
+
+  const recordHistory = (p: Profile, crop: CropMetadata, res: SimulationResult, das: number) => {
+    const entry: HistoryEntry = {
+      id: `${Date.now()}`,
+      ts: Date.now(),
+      profile: p,
+      cropNames: { mr: crop.common_name_mr, hi: crop.common_name_hi, en: crop.common_name_en },
+      message: res.generated_message,
+      actions: (res.advice_items || []).map((i) => i.action),
+      das,
+      audio: res.voice_audio_url,
+    };
+    // Read fresh from storage: this also runs from the mount effect, where `history` state is still empty.
+    const next = [entry, ...readHistory().filter((e) => entryKey(e) !== entryKey(entry))].slice(0, HISTORY_MAX);
+    writeHistory(next);
+    setHistory(next);
+  };
 
   const loadAdvice = async (p: Profile, cropList: CropMetadata[]) => {
     const crop = cropList.find((c) => c.crop_id === p.cropId);
@@ -164,6 +238,8 @@ export default function KisanPage() {
         language: p.lang,
       });
       setResult(res);
+      setSavedFrom(null);
+      recordHistory(p, crop, res, das);
     } catch {
       setError(T.error[p.lang]);
     } finally {
@@ -173,6 +249,7 @@ export default function KisanPage() {
 
   // First load: crops from the backend, then jump straight to advice for a returning farmer.
   useEffect(() => {
+    setHistory(readHistory());
     const saved = readProfile();
     if (saved) {
       setLang(saved.lang);
@@ -277,8 +354,55 @@ export default function KisanPage() {
   const editDetails = () => {
     stopAudio();
     setResult(null);
+    setSavedFrom(null);
+    setShowHistory(false);
     setError("");
   };
+
+  const openHistory = () => {
+    stopAudio();
+    setResult(null);
+    setSavedFrom(null);
+    setError("");
+    setShowHistory(true);
+  };
+
+  const openEntry = (e: HistoryEntry) => {
+    stopAudio();
+    const p = e.profile;
+    setLang(p.lang);
+    setCropId(p.cropId);
+    setPlaceId(p.placeId);
+    setGps(p.gps);
+    setAgeId(p.ageId);
+    setResult({
+      status: "saved",
+      crop_id: p.cropId,
+      crop_name: e.cropNames[p.lang],
+      das: e.das,
+      generated_message: e.message,
+      language: p.lang,
+      voice_audio_url: e.audio,
+      advice_items: e.actions.map((action) => ({ action, urgency: "LOW", reason_code: "", params: {}, data_confidence: "", sources_used: [] })),
+    } as unknown as SimulationResult);
+    setSavedFrom(e);
+    setShowHistory(false);
+    setError("");
+  };
+
+  const clearHistory = () => {
+    if (!window.confirm(t("confirmClear"))) return;
+    writeHistory([]);
+    setHistory([]);
+  };
+
+  const formatTs = (ts: number) =>
+    new Date(ts).toLocaleString(lang === "en" ? "en-IN" : lang === "hi" ? "hi-IN" : "mr-IN", {
+      day: "numeric",
+      month: "short",
+      hour: "numeric",
+      minute: "2-digit",
+    });
 
   const cropName = (c: CropMetadata) =>
     lang === "mr" ? c.common_name_mr : lang === "hi" ? c.common_name_hi : c.common_name_en;
@@ -349,6 +473,29 @@ export default function KisanPage() {
         {/* RESULT */}
         {!loading && result && hero && headline && (
           <div className="space-y-4">
+            <div className="flex gap-3">
+              <button
+                onClick={editDetails}
+                className="flex-1 h-14 rounded-2xl bg-white border-2 border-emerald-500 text-emerald-900 text-base font-extrabold active:scale-95"
+              >
+                {t("home")}
+              </button>
+              {history.length > 0 && (
+                <button
+                  onClick={openHistory}
+                  className="h-14 px-4 rounded-2xl bg-white border-2 border-slate-300 text-slate-800 text-base font-bold active:scale-95"
+                >
+                  {t("history")}
+                </button>
+              )}
+            </div>
+
+            {savedFrom && (
+              <p className="text-sm font-semibold text-slate-600">
+                {t("savedOn")} {formatTs(savedFrom.ts)}
+              </p>
+            )}
+
             <div className={`rounded-3xl border-2 p-5 ${TONE[hero.tone]}`}>
               <div className="text-6xl leading-none">{hero.icon}</div>
               <h2 className="mt-3 text-3xl font-extrabold leading-snug">{hero.n[lang]}</h2>
@@ -386,10 +533,7 @@ export default function KisanPage() {
 
             <div className="grid grid-cols-2 gap-3 pt-2">
               <button
-                onClick={() => {
-                  const p = readProfile();
-                  if (p) loadAdvice({ ...p, lang }, crops);
-                }}
+                onClick={() => loadAdvice({ lang, cropId, placeId, gps, ageId }, crops)}
                 className="h-14 rounded-2xl bg-white border-2 border-emerald-300 text-emerald-900 text-base font-bold active:scale-95"
               >
                 {t("refresh")}
@@ -420,8 +564,64 @@ export default function KisanPage() {
         )}
 
         {/* SETUP FORM */}
-        {!loading && !result && (
+        {/* HISTORY */}
+        {!loading && !result && showHistory && (
+          <div className="space-y-4">
+            <button
+              onClick={editDetails}
+              className="w-full h-14 rounded-2xl bg-white border-2 border-emerald-500 text-emerald-900 text-base font-extrabold active:scale-95"
+            >
+              {t("home")}
+            </button>
+            <h2 className="text-xl font-extrabold">{t("history")}</h2>
+            {history.length === 0 && <p className="text-lg text-slate-600">{t("historyEmpty")}</p>}
+            <ul className="space-y-3">
+              {history.map((e) => {
+                const a = ACTIONS[e.actions[0]] || ACTIONS.MONITOR_CROP;
+                const place = PLACES.find((x) => x.id === e.profile.placeId);
+                return (
+                  <li key={e.id}>
+                    <button
+                      onClick={() => openEntry(e)}
+                      className={`w-full text-left rounded-2xl border-2 p-4 active:scale-[0.98] transition ${TONE[a.tone]}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-4xl">{a.icon}</span>
+                        <div className="min-w-0">
+                          <div className="text-lg font-extrabold leading-snug">{a.n[e.profile.lang]}</div>
+                          <div className="text-sm opacity-80">
+                            {cropEmoji(e.profile.cropId)} {e.cropNames[e.profile.lang]} ·{" "}
+                            {place ? place.n[e.profile.lang] : T.myLocation[e.profile.lang]}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-2 text-sm opacity-70">{formatTs(e.ts)}</div>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+            {history.length > 0 && (
+              <button
+                onClick={clearHistory}
+                className="w-full h-12 rounded-2xl bg-white border-2 border-red-300 text-red-800 text-base font-bold active:scale-95"
+              >
+                {t("clearHistory")}
+              </button>
+            )}
+          </div>
+        )}
+
+        {!loading && !result && !showHistory && (
           <div className="space-y-7">
+            {history.length > 0 && (
+              <button
+                onClick={openHistory}
+                className="w-full h-14 rounded-2xl bg-white border-2 border-slate-300 text-slate-800 text-lg font-bold active:scale-95"
+              >
+                {t("history")} ({history.length})
+              </button>
+            )}
             {error && (
               <div className="rounded-2xl bg-red-50 border-2 border-red-300 text-red-900 p-4 text-lg font-semibold">
                 {error}
